@@ -612,7 +612,7 @@ function renderCards(queueList, scheduleMap){
           return `<div class="next-box${i > 0 ? ' next-box-later' : ''}${slot.booked ? '' : ' next-box-empty'}">
               ${calendarSvg()}
               <div>
-                <div class="${cls}">${slot.time} · ${label}</div>
+                <div class="${cls}"><span class="en">${slot.time}</span> · ${label}</div>
                 <div class="next-en">${i === 0 ? 'Next hour' : 'Upcoming'}</div>
               </div>
             </div>`;
