@@ -564,7 +564,7 @@
    CONFIG — edit these values to match your own Google Sheet
    ================================================================ */
 const CONFIG = {
-  SHEET_ID: "1jvZi_zrqL4O3wHO-0QiMidO9HHbbbRCrwzd9BxG1IX0",
+  SHEET_ID: "1fQ2ieIc0qBhrgx6LwlPQ53HASxvS3QBMs04gcwTfMb8",
   QUEUE_TAB: "Queue",                    // tab holding therapist identity (ID, Name, Photo)
   SCHEDULE_TAB: "ตารางเวลาหมอนวด",         // tab holding hourly booking schedule
   SETTINGS_TAB: "Settings",              // tab holding shop name / phone etc.
@@ -645,6 +645,11 @@ function isAvailable(statusRaw){
 function currentSlotLabel(){
   const now = new Date();
   return String(now.getHours()).padStart(2, '0') + ':00';
+}
+
+function isShopOpenNow(){
+  const hour = new Date().getHours();
+  return hour >= CONFIG.OPEN_HOUR && hour <= CONFIG.CLOSE_HOUR;
 }
 
 // Build a map: Therapist_ID -> sorted array of { time, status, note }
@@ -769,12 +774,39 @@ function renderCards(queueList, scheduleMap){
       </div>`;
     }
 
+    // ---- Outside operating hours: whole shop is closed right now ----
+    if (!isShopOpenNow()){
+      const changed = !isFirstRender && previousStatusMap[id] !== undefined && previousStatusMap[id] !== 'closed';
+      previousStatusMap[id] = 'closed';
+      const openHourLabel = String(CONFIG.OPEN_HOUR).padStart(2, '0') + ':00';
+      return `
+      <div class="card card-off${isFirstRender ? ' card-enter' : ''}${changed ? ' status-flash' : ''}"${enterStyle}>
+        <div class="card-top">
+          <div class="avatar">${photo}</div>
+          <div>
+            <div class="card-name-th">${nameTh}</div>
+            <div class="card-name-en">${nameEn}</div>
+          </div>
+          <div class="pill off">
+            <span class="pill-dot"></span>
+            Closed
+          </div>
+        </div>
+        <div class="card-body day-off-body">
+          <div class="day-off-icon${changed ? ' icon-flash' : ''}">${statusIconSvg('off')}</div>
+          <div class="day-off-text en">Closed</div>
+          <div class="day-off-sub">ปิดให้บริการแล้ว · เปิดอีกครั้ง <span class="en">${openHourLabel}</span> น. · <span class="en">Opens again at ${openHourLabel}</span></div>
+        </div>
+      </div>`;
+    }
+
     const view = computeTherapistView(id, scheduleMap[id]);
     const available = view.available;
     const nowLabel = currentSlotLabel();
     const statusKey = available ? 'available' : 'busy';
     const changed = !isFirstRender && previousStatusMap[id] !== undefined && previousStatusMap[id] !== statusKey;
     previousStatusMap[id] = statusKey;
+    const isLastHour = nowLabel === (String(CONFIG.CLOSE_HOUR).padStart(2, '0') + ':00');
 
     const nextBox = view.nextThree.length
       ? view.nextThree.map((slot, i) => {
@@ -794,7 +826,9 @@ function renderCards(queueList, scheduleMap){
           </div>`;
 
     const hint = available
-      ? `พร้อมรับลูกค้าทันที · <span class="en">Ready for walk-in</span>`
+      ? (isLastHour
+          ? `กำลังอยู่ให้บริการคิวสุดท้าย · <span class="en">Last service today</span>`
+          : `พร้อมรับลูกค้าทันที · <span class="en">Ready for walk-in</span>`)
       : (view.currentNote ? view.currentNote + ' · กำลังให้บริการอยู่' : `กำลังให้บริการ · <span class="en">Currently in session</span>`);
 
     return `
