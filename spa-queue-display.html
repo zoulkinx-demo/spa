@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>คิวบริการสปา | Spa Queue Board</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;500;600;700&family=Cinzel:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Thai:wght@400;500;600;700&family=Cinzel:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
   /* ============================================================
      CONFIG — edit these two lines to point at your own Sheet
@@ -24,13 +24,13 @@
     --line: rgba(36,24,17,0.12);
     --available: #2F6B45;
     --available-bg: #E4EFE3;
-    --booking-light: #5FAE72;
+    --booking-brown: #6B4A32;
     --busy: #A6462F;
     --busy-bg: #F4E4DE;
     --card-bg: #FFFDF8;
     --shadow: 0 18px 40px -20px rgba(36,24,17,0.35);
 
-    --font-thai: 'Noto Sans Thai', sans-serif;
+    --font-thai: 'Noto Serif Thai', serif;
     --font-english: 'Inter', sans-serif;
     --font-clock: 'Cinzel', serif;
   }
@@ -275,7 +275,7 @@
   .schedule-time{ font-size: 13px; color: var(--muted); font-weight:600; flex-shrink:0; width: 48px; }
   .schedule-status{ font-size: 16px; font-weight:700; text-align:right; }
   .schedule-status.avail{ color: var(--available); }
-  .schedule-status.booked{ color: var(--booking-light); }
+  .schedule-status.booked{ color: var(--booking-brown); }
 
   /* ---------- Footer ---------- */
   .footer{
@@ -522,10 +522,14 @@ function computeTherapistView(therapistId, slots){
     return { time, booked, note: booked ? entry.note : '' };
   });
 
+  // Next 3 slots in chronological order, starting right after the current hour
+  const startIdx = fullDay.findIndex(s => s.time > nowLabel);
+  const nextThree = startIdx === -1 ? [] : fullDay.slice(startIdx, startIdx + 3);
+
   return {
     available: !currentlyBusy,
     currentNote: currentlyBusy ? currentEntry.note : '',
-    fullDay
+    nextThree
   };
 }
 
@@ -599,16 +603,17 @@ function renderCards(queueList, scheduleMap){
     const available = view.available;
     const nowLabel = currentSlotLabel();
 
-    const scheduleRows = view.fullDay.map(slot => {
-      const isNow = slot.time === nowLabel;
-      const statusHtml = slot.booked
-        ? `<span class="schedule-status booked">${slot.note ? slot.note : 'ไม่ว่าง'}</span>`
-        : `<span class="schedule-status avail">Available</span>`;
-      return `<div class="schedule-row${isNow ? ' is-current' : ''}">
-                <span class="schedule-time">${slot.time}</span>
-                ${statusHtml}
-              </div>`;
-    }).join('');
+    const scheduleRows = view.nextThree.length
+      ? view.nextThree.map(slot => {
+          const statusHtml = slot.booked
+            ? `<span class="schedule-status booked">${slot.note ? slot.note : 'ไม่ว่าง'}</span>`
+            : `<span class="schedule-status avail">Available</span>`;
+          return `<div class="schedule-row">
+                    <span class="schedule-time">${slot.time}</span>
+                    ${statusHtml}
+                  </div>`;
+        }).join('')
+      : `<div class="schedule-row"><span class="schedule-status avail" style="text-align:left;">ปิดให้บริการแล้ววันนี้ · Closed for today</span></div>`;
 
     const hint = available
       ? 'พร้อมรับลูกค้าทันที · Ready for walk-in'
@@ -636,7 +641,7 @@ function renderCards(queueList, scheduleMap){
             <div class="status-hint${available ? '' : ' busy'}">${hint}</div>
           </div>
         </div>
-        <div class="schedule-label"><span class="rule"></span>ตารางวันนี้ ${CONFIG.OPEN_HOUR}:00-${CONFIG.CLOSE_HOUR}:00 น. / Today's schedule<span class="rule"></span></div>
+        <div class="schedule-label"><span class="rule"></span>คิวถัดไป 3 ชั่วโมง / Next 3 Hours<span class="rule"></span></div>
         <div class="schedule-list">${scheduleRows}</div>
       </div>
     </div>`;
