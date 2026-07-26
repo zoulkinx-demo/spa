@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>คิวบริการสปา | Spa Queue Board</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Thai:wght@500;600;700&family=Noto+Sans+Thai:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;1,600&family=Cinzel:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;500;600;700&family=Cinzel:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
   /* ============================================================
      CONFIG — edit these two lines to point at your own Sheet
@@ -24,16 +24,15 @@
     --line: rgba(36,24,17,0.12);
     --available: #2F6B45;
     --available-bg: #E4EFE3;
+    --booking-light: #5FAE72;
     --busy: #A6462F;
     --busy-bg: #F4E4DE;
     --card-bg: #FFFDF8;
     --shadow: 0 18px 40px -20px rgba(36,24,17,0.35);
 
-    --font-th-display: 'Noto Serif Thai', serif;
-    --font-en-display: 'Playfair Display', serif;
+    --font-thai: 'Noto Sans Thai', sans-serif;
+    --font-english: 'Inter', sans-serif;
     --font-clock: 'Cinzel', serif;
-    --font-th-body: 'Noto Sans Thai', sans-serif;
-    --font-en-body: 'Inter', sans-serif;
   }
 
   *{ box-sizing:border-box; margin:0; padding:0; }
@@ -47,7 +46,7 @@
       radial-gradient(900px 500px at -5% 110%, rgba(198,162,77,0.08), transparent 55%),
       var(--bg);
     color: var(--ink);
-    font-family: var(--font-th-body);
+    font-family: var(--font-thai);
     min-height: 100vh;
     padding: clamp(16px, 3vw, 40px);
   }
@@ -105,14 +104,14 @@
 
   .title-block{ flex:1; min-width:280px; text-align:center; }
   .title-th{
-    font-family: var(--font-th-display);
+    font-family: var(--font-thai);
     font-weight:700;
     font-size: clamp(26px, 3.4vw, 42px);
     color: var(--espresso);
     letter-spacing: .2px;
   }
   .title-en{
-    font-family: var(--font-en-body);
+    font-family: var(--font-english);
     font-weight:600;
     letter-spacing: 3px;
     text-transform: uppercase;
@@ -148,7 +147,7 @@
     color: var(--gold-light);
     display:flex; align-items:center; justify-content:center; gap:10px;
   }
-  .clock-date{ font-size: 12px; color: var(--gold-light); margin-top: 6px; line-height:1.6; font-family: var(--font-en-body); letter-spacing: 0.4px; }
+  .clock-date{ font-size: 12px; color: var(--gold-light); margin-top: 6px; line-height:1.6; font-family: 'Inter', sans-serif; letter-spacing: 0.4px; }
 
   /* ---------- Status strip ---------- */
   .sync-strip{
@@ -198,14 +197,14 @@
 
   .card-name-th{
     color:#fff;
-    font-family: var(--font-th-display);
+    font-family: var(--font-thai);
     font-weight:700;
     font-size: 21px;
   }
   .card-name-en{
     color: var(--gold-light);
     font-size: 13px;
-    font-family: var(--font-en-body);
+    font-family: var(--font-english);
     margin-top: 2px;
   }
 
@@ -237,7 +236,7 @@
   .status-icon svg{ width:100%; height:100%; }
   .status-label{ font-size: 12px; color: var(--muted); }
   .status-value{
-    font-family: var(--font-th-display);
+    font-family: var(--font-thai);
     font-weight:700;
     font-size: 22px;
     line-height:1.3;
@@ -249,29 +248,34 @@
   .card.card-off{ opacity: 0.82; }
   .card.card-off .card-top{ filter: grayscale(0.4); }
   .status-hint{ font-size: 12px; color: var(--muted); margin-top:2px; }
+  .status-hint.busy{ color: var(--busy); font-weight:600; font-size: 13px; }
 
-  .next-label{
+  .schedule-label{
     font-size: 12px; color: var(--muted);
     display:flex; align-items:center; gap:10px;
     margin-bottom: 10px;
   }
-  .next-label .rule{ flex:1; height:1px; background: var(--line); }
+  .schedule-label .rule{ flex:1; height:1px; background: var(--line); }
 
-  .next-box{
-    display:flex; align-items:center; gap:12px;
+  .schedule-list{
     border: 1px solid var(--line);
-    background: var(--bg-2);
     border-radius: 12px;
-    padding: 12px 14px;
+    overflow: hidden;
+    max-height: 300px;
+    overflow-y: auto;
   }
-  .next-box + .next-box{ margin-top: 8px; }
-  .next-box-later{ opacity: 0.72; padding: 9px 14px; }
-  .next-box-empty{ border-style: dashed; background: transparent; }
-  .next-box-empty .next-th{ color: var(--available); font-weight:600; font-size: 20px; }
-  .next-box-empty svg{ opacity: 0.5; }
-  .next-box svg{ width:22px; height:22px; flex-shrink:0; color: var(--muted); }
-  .next-th{ font-size: 18px; font-weight:700; }
-  .next-en{ font-size: 12px; color: var(--muted); }
+  .schedule-row{
+    display:flex; align-items:center; justify-content:space-between;
+    gap: 10px;
+    padding: 9px 14px;
+    background: var(--card-bg);
+  }
+  .schedule-row + .schedule-row{ border-top: 1px solid var(--line); }
+  .schedule-row.is-current{ background: var(--bg-2); }
+  .schedule-time{ font-size: 13px; color: var(--muted); font-weight:600; flex-shrink:0; width: 48px; }
+  .schedule-status{ font-size: 16px; font-weight:700; text-align:right; }
+  .schedule-status.avail{ color: var(--available); }
+  .schedule-status.booked{ color: var(--booking-light); }
 
   /* ---------- Footer ---------- */
   .footer{
@@ -309,9 +313,7 @@
     flex-shrink:0;
   }
   .walkin-icon svg{ width:22px; height:22px; color: var(--gold-light); }
-  .walkin-th{ font-family: var(--font-th-display); font-weight:700; font-size:17px; }
-  .walkin-en{ font-size: 13px; color: var(--muted); }
-  .walkin-sub{ font-size: 12px; color: var(--muted); margin-top:4px; }
+  .walkin-th{ font-family: var(--font-thai); font-weight:700; font-size:23px; line-height:1.4; }
 
   .empty-state, .error-state{
     text-align:center;
@@ -392,8 +394,6 @@
       </div>
       <div>
         <div class="walkin-th">สามารถจองคิวได้ที่ Front Reception</div>
-        <div class="walkin-en">Bookings available at Front Reception</div>
-        <div class="walkin-sub">เปิดให้บริการทุกวัน 09:00 - 20:00 น. · Open daily 9:00 AM - 8:00 PM</div>
       </div>
     </div>
   </div>
@@ -405,12 +405,22 @@
    CONFIG — edit these values to match your own Google Sheet
    ================================================================ */
 const CONFIG = {
-  SHEET_ID: "1jvZi_zrqL4O3wHO-0QiMidO9HHbbbRCrwzd9BxG1IX0",
+  SHEET_ID: "1fQ2ieIc0qBhrgx6LwlPQ53HASxvS3QBMs04gcwTfMb8",
   QUEUE_TAB: "Queue",                    // tab holding therapist identity (ID, Name, Photo)
   SCHEDULE_TAB: "ตารางเวลาหมอนวด",         // tab holding hourly booking schedule
   SETTINGS_TAB: "Settings",              // tab holding shop name / phone etc.
-  REFRESH_MS: 15000                      // how often to re-check the sheet (ms)
+  REFRESH_MS: 15000,                     // how often to re-check the sheet (ms)
+  OPEN_HOUR: 14,                         // operating hours: 14:00 - 23:00
+  CLOSE_HOUR: 23
 };
+
+function hourSlots(){
+  const slots = [];
+  for (let h = CONFIG.OPEN_HOUR; h <= CONFIG.CLOSE_HOUR; h++){
+    slots.push(String(h).padStart(2, '0') + ':00');
+  }
+  return slots;
+}
 
 /* ---------------- CSV fetch + parse ---------------- */
 function sheetCsvUrl(tabName){
@@ -503,14 +513,19 @@ function computeTherapistView(therapistId, slots){
   const currentEntry = slots.find(s => s.time === nowLabel);
   const currentlyBusy = currentEntry && !isAvailable(currentEntry.status);
 
-  const upcoming = slots
-    .filter(s => s.time > nowLabel && !isAvailable(s.status))
-    .slice(0, 3); // show up to 3 upcoming bookings
+  const bySlotTime = {};
+  slots.forEach(s => { bySlotTime[s.time] = s; });
+
+  const fullDay = hourSlots().map(time => {
+    const entry = bySlotTime[time];
+    const booked = entry && !isAvailable(entry.status);
+    return { time, booked, note: booked ? entry.note : '' };
+  });
 
   return {
     available: !currentlyBusy,
     currentNote: currentlyBusy ? currentEntry.note : '',
-    nextSlots: upcoming
+    fullDay
   };
 }
 
@@ -532,10 +547,6 @@ function statusIconSvg(state){
     <path d="M14 30c2-4 6-6 10-6s8 2 10 6" stroke-linecap="round"/>
     <path d="M20 24l-3 8M28 24l3 8" stroke-linecap="round"/>
   </svg>`;
-}
-
-function calendarSvg(){
-  return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4" stroke-linecap="round"/></svg>`;
 }
 
 function renderCards(queueList, scheduleMap){
@@ -568,7 +579,7 @@ function renderCards(queueList, scheduleMap){
           </div>
           <div class="pill off">
             <span class="pill-dot"></span>
-            หยุดวันนี้ · Off today
+            Day Off
           </div>
         </div>
         <div class="card-body">
@@ -586,31 +597,22 @@ function renderCards(queueList, scheduleMap){
 
     const view = computeTherapistView(id, scheduleMap[id]);
     const available = view.available;
+    const nowLabel = currentSlotLabel();
 
-    const NEXT_SLOTS_TO_SHOW = 3;
-    const padded = [...view.nextSlots];
-    while (padded.length < NEXT_SLOTS_TO_SHOW) padded.push(null);
-
-    const nextBox = padded.map((slot, i) => slot
-      ? `<div class="next-box${i > 0 ? ' next-box-later' : ''}">
-           ${calendarSvg()}
-           <div>
-             <div class="next-th">${slot.time}${slot.note ? ' · ' + slot.note : ''}</div>
-             <div class="next-en">${i === 0 ? 'Next booking' : 'Upcoming'}</div>
-           </div>
-         </div>`
-      : `<div class="next-box next-box-empty${i > 0 ? ' next-box-later' : ''}">
-           ${calendarSvg()}
-           <div>
-             <div class="next-th">ยังไม่มีคิวจอง</div>
-             <div class="next-en">Open</div>
-           </div>
-         </div>`
-    ).join('');
+    const scheduleRows = view.fullDay.map(slot => {
+      const isNow = slot.time === nowLabel;
+      const statusHtml = slot.booked
+        ? `<span class="schedule-status booked">${slot.note ? slot.note : 'ไม่ว่าง'}</span>`
+        : `<span class="schedule-status avail">Available</span>`;
+      return `<div class="schedule-row${isNow ? ' is-current' : ''}">
+                <span class="schedule-time">${slot.time}</span>
+                ${statusHtml}
+              </div>`;
+    }).join('');
 
     const hint = available
       ? 'พร้อมรับลูกค้าทันที · Ready for walk-in'
-      : (view.currentNote ? view.currentNote + ' · In session' : 'กำลังให้บริการ · Currently in session');
+      : (view.currentNote ? view.currentNote + ' · กำลังให้บริการอยู่' : 'กำลังให้บริการ · Currently in session');
 
     return `
     <div class="card">
@@ -629,13 +631,13 @@ function renderCards(queueList, scheduleMap){
         <div class="status-row">
           <div class="status-icon">${statusIconSvg(available ? 'available' : 'busy')}</div>
           <div>
-            <div class="status-label">คิวปัจจุบัน / Current status (${currentSlotLabel()} น.)</div>
+            <div class="status-label">คิวปัจจุบัน / Current status (${nowLabel} น.)</div>
             <div class="status-value ${available ? 'available' : 'busy'}">${available ? 'ว่าง Available' : 'ไม่ว่าง Busy'}</div>
-            <div class="status-hint">${hint}</div>
+            <div class="status-hint${available ? '' : ' busy'}">${hint}</div>
           </div>
         </div>
-        <div class="next-label"><span class="rule"></span>คิวถัดไป / Next booking<span class="rule"></span></div>
-        ${nextBox}
+        <div class="schedule-label"><span class="rule"></span>ตารางวันนี้ ${CONFIG.OPEN_HOUR}:00-${CONFIG.CLOSE_HOUR}:00 น. / Today's schedule<span class="rule"></span></div>
+        <div class="schedule-list">${scheduleRows}</div>
       </div>
     </div>`;
   }).join('');
