@@ -37,6 +37,8 @@
 
   *{ box-sizing:border-box; margin:0; padding:0; }
 
+  .en{ font-family: var(--font-english); }
+
   html, body{ height:100%; }
 
   body{
@@ -250,32 +252,28 @@
   .status-hint{ font-size: 12px; color: var(--muted); margin-top:2px; }
   .status-hint.busy{ color: var(--busy); font-weight:600; font-size: 13px; }
 
-  .schedule-label{
+  .next-label{
     font-size: 12px; color: var(--muted);
     display:flex; align-items:center; gap:10px;
     margin-bottom: 10px;
   }
-  .schedule-label .rule{ flex:1; height:1px; background: var(--line); }
+  .next-label .rule{ flex:1; height:1px; background: var(--line); }
 
-  .schedule-list{
+  .next-box{
+    display:flex; align-items:center; gap:12px;
     border: 1px solid var(--line);
+    background: var(--bg-2);
     border-radius: 12px;
-    overflow: hidden;
-    max-height: 300px;
-    overflow-y: auto;
+    padding: 12px 14px;
   }
-  .schedule-row{
-    display:flex; align-items:center; justify-content:space-between;
-    gap: 10px;
-    padding: 9px 14px;
-    background: var(--card-bg);
-  }
-  .schedule-row + .schedule-row{ border-top: 1px solid var(--line); }
-  .schedule-row.is-current{ background: var(--bg-2); }
-  .schedule-time{ font-size: 13px; color: var(--muted); font-weight:600; flex-shrink:0; width: 48px; }
-  .schedule-status{ font-size: 16px; font-weight:700; text-align:right; }
-  .schedule-status.avail{ color: var(--available); }
-  .schedule-status.booked{ color: var(--booking-brown); }
+  .next-box + .next-box{ margin-top: 8px; }
+  .next-box-later{ opacity: 0.72; padding: 9px 14px; }
+  .next-box-empty{ border-style: dashed; background: transparent; }
+  .next-box svg{ width:22px; height:22px; flex-shrink:0; color: var(--muted); }
+  .next-th{ font-size: 18px; font-weight:700; }
+  .next-th.avail{ color: var(--available); }
+  .next-th.booked{ color: var(--booking-brown); }
+  .next-en{ font-size: 12px; color: var(--muted); font-family: var(--font-english); }
 
   /* ---------- Footer ---------- */
   .footer{
@@ -362,7 +360,7 @@
   <!-- Sync status -->
   <div class="sync-strip">
     <span class="dot pulse" id="syncDot"></span>
-    <span id="syncText">กำลังเชื่อมต่อ Google Sheet…</span>
+    <span id="syncText">กำลังเชื่อมต่อ <span class="en">Google Sheet</span>…</span>
   </div>
 
   <!-- Cards -->
@@ -393,7 +391,7 @@
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="4" r="2"/><path d="M12 8v5l-3 7M12 13l3 7M9 12l3-3 3 2" stroke-linecap="round" stroke-linejoin="round"/></svg>
       </div>
       <div>
-        <div class="walkin-th">สามารถจองคิวได้ที่ Front Reception</div>
+        <div class="walkin-th">สามารถจองคิวได้ที่ <span class="en">Front Reception</span></div>
       </div>
     </div>
   </div>
@@ -553,6 +551,10 @@ function statusIconSvg(state){
   </svg>`;
 }
 
+function calendarSvg(){
+  return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4" stroke-linecap="round"/></svg>`;
+}
+
 function renderCards(queueList, scheduleMap){
   const grid = document.getElementById('cardGrid');
   if (!queueList.length){
@@ -590,9 +592,9 @@ function renderCards(queueList, scheduleMap){
           <div class="status-row">
             <div class="status-icon">${statusIconSvg('off')}</div>
             <div>
-              <div class="status-label">คิวปัจจุบัน / Current status</div>
-              <div class="status-value off">หยุดวันนี้ Not working today</div>
-              <div class="status-hint">ไม่รับคิวในวันนี้ · Not accepting bookings today</div>
+              <div class="status-label">คิวปัจจุบัน / <span class="en">Current status</span></div>
+              <div class="status-value off">หยุดวันนี้ <span class="en">Not working today</span></div>
+              <div class="status-hint">ไม่รับคิวในวันนี้ · <span class="en">Not accepting bookings today</span></div>
             </div>
           </div>
         </div>
@@ -603,21 +605,28 @@ function renderCards(queueList, scheduleMap){
     const available = view.available;
     const nowLabel = currentSlotLabel();
 
-    const scheduleRows = view.nextThree.length
-      ? view.nextThree.map(slot => {
-          const statusHtml = slot.booked
-            ? `<span class="schedule-status booked">${slot.note ? slot.note : 'ไม่ว่าง'}</span>`
-            : `<span class="schedule-status avail">Available</span>`;
-          return `<div class="schedule-row">
-                    <span class="schedule-time">${slot.time}</span>
-                    ${statusHtml}
-                  </div>`;
+    const nextBox = view.nextThree.length
+      ? view.nextThree.map((slot, i) => {
+          const label = slot.booked ? (slot.note || 'ไม่ว่าง') : `<span class="en">Available</span>`;
+          const cls = slot.booked ? 'next-th booked' : 'next-th avail';
+          return `<div class="next-box${i > 0 ? ' next-box-later' : ''}${slot.booked ? '' : ' next-box-empty'}">
+              ${calendarSvg()}
+              <div>
+                <div class="${cls}">${slot.time} · ${label}</div>
+                <div class="next-en">${i === 0 ? 'Next hour' : 'Upcoming'}</div>
+              </div>
+            </div>`;
         }).join('')
-      : `<div class="schedule-row"><span class="schedule-status avail" style="text-align:left;">ปิดให้บริการแล้ววันนี้ · Closed for today</span></div>`;
+      : `<div class="next-box next-box-empty">
+            ${calendarSvg()}
+            <div>
+              <div class="next-th avail">ปิดให้บริการแล้ววันนี้ · <span class="en">Closed for today</span></div>
+            </div>
+          </div>`;
 
     const hint = available
-      ? 'พร้อมรับลูกค้าทันที · Ready for walk-in'
-      : (view.currentNote ? view.currentNote + ' · กำลังให้บริการอยู่' : 'กำลังให้บริการ · Currently in session');
+      ? `พร้อมรับลูกค้าทันที · <span class="en">Ready for walk-in</span>`
+      : (view.currentNote ? view.currentNote + ' · กำลังให้บริการอยู่' : `กำลังให้บริการ · <span class="en">Currently in session</span>`);
 
     return `
     <div class="card">
@@ -629,20 +638,20 @@ function renderCards(queueList, scheduleMap){
         </div>
         <div class="pill ${available ? 'available' : 'busy'}">
           <span class="pill-dot"></span>
-          ${available ? 'ว่าง · Available' : 'ไม่ว่าง · Busy'}
+          ${available ? 'ว่าง · <span class="en">Available</span>' : 'ไม่ว่าง · <span class="en">Busy</span>'}
         </div>
       </div>
       <div class="card-body">
         <div class="status-row">
           <div class="status-icon">${statusIconSvg(available ? 'available' : 'busy')}</div>
           <div>
-            <div class="status-label">คิวปัจจุบัน / Current status (${nowLabel} น.)</div>
-            <div class="status-value ${available ? 'available' : 'busy'}">${available ? 'ว่าง Available' : 'ไม่ว่าง Busy'}</div>
+            <div class="status-label">คิวปัจจุบัน / <span class="en">Current status</span> (${nowLabel} น.)</div>
+            <div class="status-value ${available ? 'available' : 'busy'}">${available ? 'ว่าง <span class="en">Available</span>' : 'ไม่ว่าง <span class="en">Busy</span>'}</div>
             <div class="status-hint${available ? '' : ' busy'}">${hint}</div>
           </div>
         </div>
-        <div class="schedule-label"><span class="rule"></span>คิวถัดไป 3 ชั่วโมง / Next 3 Hours<span class="rule"></span></div>
-        <div class="schedule-list">${scheduleRows}</div>
+        <div class="next-label"><span class="rule"></span>คิวถัดไป / <span class="en">Next booking</span><span class="rule"></span></div>
+        ${nextBox}
       </div>
     </div>`;
   }).join('');
