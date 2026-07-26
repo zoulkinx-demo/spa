@@ -249,6 +249,29 @@
 
   .card.card-off{ opacity: 0.82; }
   .card.card-off .card-top{ filter: grayscale(0.4); }
+
+  .day-off-body{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+    padding: 44px 20px;
+    min-height: 200px;
+  }
+  .day-off-icon{ width:56px; height:56px; margin-bottom:14px; }
+  .day-off-icon svg{ width:100%; height:100%; }
+  .day-off-text{
+    font-weight:800;
+    font-size: 40px;
+    letter-spacing: 1px;
+    color: var(--muted);
+  }
+  .day-off-sub{
+    margin-top: 10px;
+    font-size: 13px;
+    color: var(--muted);
+  }
   .status-hint{ font-size: 12px; color: var(--muted); margin-top:2px; }
   .status-hint.busy{ color: var(--busy); font-weight:600; font-size: 13px; }
 
@@ -403,7 +426,7 @@
    CONFIG — edit these values to match your own Google Sheet
    ================================================================ */
 const CONFIG = {
-  SHEET_ID: "1jvZi_zrqL4O3wHO-0QiMidO9HHbbbRCrwzd9BxG1IX0",
+  SHEET_ID: "1fQ2ieIc0qBhrgx6LwlPQ53HASxvS3QBMs04gcwTfMb8",
   QUEUE_TAB: "Queue",                    // tab holding therapist identity (ID, Name, Photo)
   SCHEDULE_TAB: "ตารางเวลาหมอนวด",         // tab holding hourly booking schedule
   SETTINGS_TAB: "Settings",              // tab holding shop name / phone etc.
@@ -588,15 +611,10 @@ function renderCards(queueList, scheduleMap){
             Day Off
           </div>
         </div>
-        <div class="card-body">
-          <div class="status-row">
-            <div class="status-icon">${statusIconSvg('off')}</div>
-            <div>
-              <div class="status-label">คิวปัจจุบัน / <span class="en">Current status</span></div>
-              <div class="status-value off">หยุดวันนี้ <span class="en">Not working today</span></div>
-              <div class="status-hint">ไม่รับคิวในวันนี้ · <span class="en">Not accepting bookings today</span></div>
-            </div>
-          </div>
+        <div class="card-body day-off-body">
+          <div class="day-off-icon">${statusIconSvg('off')}</div>
+          <div class="day-off-text en">Day Off</div>
+          <div class="day-off-sub">ไม่รับคิวในวันนี้ · <span class="en">Not accepting bookings today</span></div>
         </div>
       </div>`;
     }
