@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>คิวบริการสปา | Spa Queue Board</title>
+<title>คิวบริการสปา | Premium Spa Queue Board</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Thai:wght@400;500;600;700&family=Cinzel:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
@@ -407,27 +407,52 @@
   .next-box svg{ width:100%; height:100%; color: var(--muted); }
   .next-th{ font-size: 18px; font-weight:700; }
   .next-th.avail{ color: var(--available); }
-
-  .closed-banner{
-    display:flex; align-items:center; justify-content:center; gap:14px;
-    border: 2px solid var(--espresso);
-    background: var(--bg-2);
-    border-radius: 14px;
-    padding: 20px 18px;
-  }
-  .closed-banner-icon{
-    width: 30px; height:30px; flex-shrink:0; color: var(--espresso);
-  }
-  .closed-banner-icon svg{ width:100%; height:100%; }
-  .closed-banner-text{
-    font-family: var(--font-thai);
-    font-size: 22px;
-    font-weight: 800;
-    color: var(--espresso);
-    text-align: center;
-  }
   .next-th.booked{ color: var(--booking-brown); }
+  /* Final queue notice: dark neutral tone so it does not look like an available slot */
+  .next-th.no-more{ color: #4A4A4A; }
   .next-en{ font-size: 11px; color: var(--muted); font-family: var(--font-english); text-transform: uppercase; letter-spacing: 0.6px; }
+
+  /* Customer information shown on current and upcoming booked queues */
+  .customer-info{
+    display:flex;
+    flex-wrap:wrap;
+    gap:6px;
+    margin-top:7px;
+  }
+  .customer-info-item{
+    display:inline-flex;
+    align-items:center;
+    min-height:26px;
+    padding:4px 9px;
+    border-radius:999px;
+    border:1px solid rgba(107,74,50,.11);
+    background:rgba(255,253,248,.68);
+    color:#5B4A3B;
+    font-size:12px;
+    font-weight:650;
+    line-height:1.25;
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.65);
+  }
+  .state-busy .status-hint .customer-info{ margin-top:8px; }
+  .state-busy .status-hint .customer-info-item{
+    color:#60483D;
+    background:rgba(255,248,244,.72);
+    border-color:rgba(166,70,47,.13);
+  }
+  .customer-info-item.customer-type{
+    background:rgba(198,162,77,.10);
+    border-color:rgba(198,162,77,.22);
+  }
+  .current-until{
+    margin-top:7px;
+    font-size:12px;
+    font-weight:700;
+    color:var(--busy);
+  }
+  @media (max-width:640px){
+    .customer-info{ gap:5px; }
+    .customer-info-item{ font-size:11px; padding:4px 8px; }
+  }
 
   /* ---------- Footer ---------- */
   .footer{
@@ -485,10 +510,1696 @@
     .brand{ justify-self:center; }
     .clock-box{ justify-self:center; width:100%; }
   }
+
+
+  /* ============================================================
+     V4.3 PREMIUM VISUAL SYSTEM — CSS motion + JS-enhanced ambience
+     ============================================================ */
+  :root{
+    --glass: rgba(255,253,248,0.82);
+    --glass-strong: rgba(255,253,248,0.94);
+    --night-ink: #303238;
+    --gold-glow: rgba(198,162,77,0.34);
+    --motion-x: 0px;
+    --motion-y: 0px;
+  }
+
+  body{
+    overflow-x: hidden;
+    isolation: isolate;
+  }
+
+  /* Soft vignette that keeps the information area visually focused. */
+  body::after{
+    content:"";
+    position:fixed;
+    inset:0;
+    pointer-events:none;
+    z-index:0;
+    background:
+      linear-gradient(90deg, rgba(47,31,18,.06), transparent 10%, transparent 90%, rgba(47,31,18,.06)),
+      radial-gradient(ellipse at center, transparent 46%, rgba(70,45,27,.10) 100%);
+  }
+
+  .ambient-scene{
+    position:fixed;
+    inset:0;
+    z-index:0;
+    overflow:hidden;
+    pointer-events:none;
+  }
+  .ambient-orb{
+    position:absolute;
+    border-radius:50%;
+    filter:blur(8px);
+    opacity:.25;
+    mix-blend-mode:screen;
+    will-change:transform;
+  }
+  .ambient-orb.one{
+    width:34vw; height:34vw; min-width:320px; min-height:320px;
+    top:-18vw; right:-7vw;
+    background:radial-gradient(circle, rgba(231,206,140,.72), rgba(198,162,77,0) 68%);
+    animation:orbDriftOne 18s ease-in-out infinite alternate;
+  }
+  .ambient-orb.two{
+    width:30vw; height:30vw; min-width:280px; min-height:280px;
+    bottom:-16vw; left:-8vw;
+    background:radial-gradient(circle, rgba(255,244,214,.65), rgba(198,162,77,0) 70%);
+    animation:orbDriftTwo 22s ease-in-out infinite alternate;
+  }
+  .ambient-orb.three{
+    width:18vw; height:18vw; min-width:190px; min-height:190px;
+    left:44%; top:28%;
+    background:radial-gradient(circle, rgba(255,255,255,.55), rgba(255,255,255,0) 72%);
+    opacity:.12;
+    animation:orbBreath 9s ease-in-out infinite;
+  }
+  @keyframes orbDriftOne{
+    from{ transform:translate3d(calc(var(--motion-x) * .18), calc(var(--motion-y) * .18), 0) scale(.92); }
+    to{ transform:translate3d(calc(-34px + var(--motion-x) * .18), calc(38px + var(--motion-y) * .18), 0) scale(1.08); }
+  }
+  @keyframes orbDriftTwo{
+    from{ transform:translate3d(calc(var(--motion-x) * -.12), calc(var(--motion-y) * -.12), 0) scale(1); }
+    to{ transform:translate3d(calc(44px + var(--motion-x) * -.12), calc(-30px + var(--motion-y) * -.12), 0) scale(1.12); }
+  }
+  @keyframes orbBreath{ 0%,100%{transform:scale(.85);opacity:.08} 50%{transform:scale(1.18);opacity:.18} }
+
+  .ambient-particles{ position:absolute; inset:0; }
+  .ambient-particle{
+    position:absolute;
+    width:4px; height:4px;
+    border-radius:50%;
+    background:rgba(231,206,140,.75);
+    box-shadow:0 0 12px rgba(231,206,140,.65);
+    animation:particleFloat var(--duration) linear infinite;
+    animation-delay:var(--delay);
+    opacity:0;
+  }
+  @keyframes particleFloat{
+    0%{ transform:translate3d(0,18px,0) scale(.5); opacity:0; }
+    14%{ opacity:var(--opacity); }
+    70%{ opacity:calc(var(--opacity) * .72); }
+    100%{ transform:translate3d(var(--drift),-120px,0) scale(1.15); opacity:0; }
+  }
+
+  .board{
+    transform:translate3d(calc(var(--motion-x) * .012), calc(var(--motion-y) * .012), 0);
+    transition:transform .45s cubic-bezier(.22,.61,.36,1);
+  }
+
+  /* Header becomes a polished floating command bar. */
+  .header{
+    position:relative;
+    padding:18px 20px 22px;
+    border:1px solid rgba(255,255,255,.5);
+    border-bottom-color:rgba(198,162,77,.30);
+    border-radius:24px;
+    background:linear-gradient(135deg, rgba(255,253,248,.74), rgba(255,253,248,.48));
+    box-shadow:0 18px 50px -34px rgba(55,35,20,.55), inset 0 1px 0 rgba(255,255,255,.75);
+    backdrop-filter:blur(12px) saturate(1.12);
+    -webkit-backdrop-filter:blur(12px) saturate(1.12);
+    overflow:hidden;
+  }
+  .header::before{
+    content:"";
+    position:absolute;
+    inset:-2px;
+    background:linear-gradient(110deg, transparent 20%, rgba(255,255,255,.65) 43%, transparent 62%);
+    transform:translateX(-120%);
+    animation:headerSweep 10s ease-in-out infinite;
+    pointer-events:none;
+  }
+  @keyframes headerSweep{ 0%,66%{transform:translateX(-120%)} 86%,100%{transform:translateX(120%)} }
+
+  .brand-badge{
+    position:relative;
+    border-color:rgba(198,162,77,.26);
+    box-shadow:0 16px 35px -22px rgba(36,24,17,.68), 0 0 0 1px rgba(255,255,255,.65) inset;
+  }
+  .brand-badge::after{
+    content:"";
+    position:absolute;
+    inset:5px;
+    border:1px solid rgba(198,162,77,.18);
+    border-radius:10px;
+    pointer-events:none;
+  }
+
+  .clock-box{
+    position:relative;
+    overflow:hidden;
+    border:1px solid rgba(231,206,140,.28);
+    box-shadow:0 18px 38px -23px rgba(36,24,17,.75), inset 0 1px 0 rgba(255,255,255,.14);
+  }
+  .clock-box::before{
+    content:"";
+    position:absolute;
+    inset:-80% -30%;
+    background:conic-gradient(from 120deg, transparent, rgba(231,206,140,.16), transparent 30%);
+    animation:clockAura 12s linear infinite;
+  }
+  .clock-time,.clock-date{ position:relative; z-index:1; }
+  @keyframes clockAura{ to{transform:rotate(360deg)} }
+
+  .sync-strip{
+    position:relative;
+    overflow:hidden;
+    margin-top:14px;
+    margin-bottom:22px;
+    background:rgba(255,253,248,.84);
+    backdrop-filter:blur(10px);
+    -webkit-backdrop-filter:blur(10px);
+    border-color:rgba(198,162,77,.20);
+    box-shadow:0 10px 24px -18px rgba(36,24,17,.65), inset 0 1px 0 rgba(255,255,255,.8);
+    transition:transform .25s ease, box-shadow .25s ease;
+  }
+  body.sync-success .sync-strip{
+    animation:syncConfirm .8s ease-out;
+  }
+  @keyframes syncConfirm{
+    0%{transform:scale(1)} 36%{transform:scale(1.035);box-shadow:0 0 0 7px rgba(47,107,69,.08)} 100%{transform:scale(1)}
+  }
+
+  .grid{ gap:clamp(18px,2vw,28px); perspective:1200px; }
+  .card{
+    background:linear-gradient(155deg, var(--glass-strong), var(--glass));
+    border-color:rgba(255,255,255,.65);
+    box-shadow:0 28px 60px -36px rgba(42,27,16,.68), 0 8px 22px -18px rgba(42,27,16,.35), inset 0 1px 0 rgba(255,255,255,.88);
+    backdrop-filter:blur(14px) saturate(1.08);
+    -webkit-backdrop-filter:blur(14px) saturate(1.08);
+    transform:translateZ(0) rotateX(var(--tilt-y,0deg)) rotateY(var(--tilt-x,0deg));
+    transform-style:preserve-3d;
+    transition:transform .35s cubic-bezier(.22,.61,.36,1), box-shadow .35s ease, border-color .35s ease;
+    will-change:transform;
+  }
+  .card:hover{
+    border-color:rgba(198,162,77,.42);
+    box-shadow:0 34px 68px -38px rgba(42,27,16,.72), 0 0 0 1px rgba(198,162,77,.12);
+  }
+  .card::after{
+    content:"";
+    position:absolute;
+    inset:0;
+    border-radius:inherit;
+    background:radial-gradient(circle at var(--shine-x,50%) var(--shine-y,20%), rgba(255,255,255,.32), transparent 30%);
+    opacity:var(--shine-opacity,0);
+    transition:opacity .3s ease;
+    pointer-events:none;
+    z-index:4;
+  }
+
+  .card-top{
+    position:relative;
+    isolation:isolate;
+    overflow:hidden;
+    background:
+      radial-gradient(circle at 12% 10%, rgba(231,206,140,.18), transparent 26%),
+      linear-gradient(120deg, #60402a, #805b3d 58%, #67452e);
+  }
+  .card-top::after{
+    content:"";
+    position:absolute;
+    top:-80%; bottom:-80%; width:35%;
+    left:-45%;
+    background:linear-gradient(90deg, transparent, rgba(255,255,255,.13), transparent);
+    transform:skewX(-18deg);
+    animation:cardHeaderSweep 8s ease-in-out infinite;
+    z-index:-1;
+  }
+  @keyframes cardHeaderSweep{ 0%,68%{left:-45%} 88%,100%{left:125%} }
+
+  .card.state-available .card-top{ box-shadow:inset 0 -3px 0 rgba(83,160,104,.24); }
+  .card.state-busy .card-top{ box-shadow:inset 0 -3px 0 rgba(194,91,64,.22); }
+
+  .avatar{
+    box-shadow:0 0 0 3px rgba(244,238,224,.18), 0 10px 24px -12px rgba(0,0,0,.65), inset 0 1px 0 rgba(255,255,255,.55);
+    transition:transform .45s cubic-bezier(.22,.61,.36,1);
+  }
+  .card:hover .avatar{ transform:translateZ(24px) scale(1.035); }
+  .avatar-wrap.avatar-live::before{
+    content:"";
+    position:absolute;
+    width:10px; height:10px;
+    right:0; bottom:4px;
+    border-radius:50%;
+    background:#59b779;
+    border:2px solid #fff8e8;
+    box-shadow:0 0 0 4px rgba(89,183,121,.18), 0 0 12px rgba(89,183,121,.65);
+    z-index:3;
+  }
+
+  .pill{ border:1px solid rgba(255,255,255,.35); }
+  .pill.busy{ animation:busyPulse 3.4s ease-in-out infinite; }
+  @keyframes busyPulse{ 0%,100%{box-shadow:0 2px 6px rgba(0,0,0,.1)} 50%{box-shadow:0 2px 6px rgba(0,0,0,.1),0 0 0 5px rgba(166,70,47,.10)} }
+
+  /* Available status aura growing — calm green pulse */
+  .card.state-available .pill.available{
+    position:relative;
+    overflow:visible;
+    isolation:isolate;
+    animation:availableBadgeFloat 2.8s ease-in-out infinite;
+    box-shadow:0 4px 12px rgba(47,107,69,.12), 0 0 0 0 rgba(47,107,69,0);
+  }
+  .card.state-available .pill.available::before,
+  .card.state-available .pill.available::after{
+    content:"";
+    position:absolute;
+    inset:0;
+    border-radius:999px;
+    pointer-events:none;
+    z-index:-1;
+  }
+  .card.state-available .pill.available::before{
+    border:1px solid rgba(47,107,69,.30);
+    animation:availableBadgeAura 2.8s cubic-bezier(.22,.61,.36,1) infinite;
+  }
+  .card.state-available .pill.available::after{
+    inset:-8px;
+    background:radial-gradient(circle, rgba(47,107,69,.18) 0%, rgba(89,183,121,.11) 34%, rgba(47,107,69,.04) 56%, rgba(47,107,69,0) 76%);
+    filter:blur(2px);
+    opacity:0;
+    animation:availableBadgeGlow 2.8s ease-in-out infinite;
+  }
+  .card.state-available .pill.available .pill-dot{
+    animation:availableDotPulse 1.5s ease-in-out infinite;
+  }
+  @keyframes availableBadgeFloat{
+    0%,100%{ transform:translateY(0) scale(1); }
+    50%{ transform:translateY(-1px) scale(1.02); }
+  }
+  @keyframes availableBadgeAura{
+    0%{ opacity:0; transform:scale(1); }
+    18%{ opacity:.58; }
+    70%{ opacity:.14; }
+    100%{ opacity:0; transform:scale(1.26); }
+  }
+  @keyframes availableBadgeGlow{
+    0%,100%{ opacity:0; transform:scale(.96); }
+    40%{ opacity:.55; transform:scale(1.08); }
+    100%{ opacity:0; transform:scale(1.24); }
+  }
+  @keyframes availableDotPulse{
+    0%,100%{ transform:scale(1); box-shadow:0 0 0 0 rgba(47,107,69,0); }
+    50%{ transform:scale(1.18); box-shadow:0 0 0 6px rgba(47,107,69,.13); }
+  }
+
+  /* Busy status aura growing */
+  .card.state-busy .pill.busy{
+    position:relative;
+    overflow:visible;
+    isolation:isolate;
+    animation:busyBadgeFloat 2.6s ease-in-out infinite;
+    box-shadow:0 4px 12px rgba(166,70,47,.12), 0 0 0 0 rgba(166,70,47,0);
+  }
+  .card.state-busy .pill.busy::before,
+  .card.state-busy .pill.busy::after{
+    content:"";
+    position:absolute;
+    inset:0;
+    border-radius:999px;
+    pointer-events:none;
+    z-index:-1;
+  }
+  .card.state-busy .pill.busy::before{
+    border:1px solid rgba(166,70,47,.28);
+    animation:busyBadgeAura 2.6s cubic-bezier(.22,.61,.36,1) infinite;
+  }
+  .card.state-busy .pill.busy::after{
+    inset:-8px;
+    background:radial-gradient(circle, rgba(166,70,47,.18) 0%, rgba(166,70,47,.10) 34%, rgba(166,70,47,.04) 55%, rgba(166,70,47,0) 76%);
+    filter:blur(2px);
+    opacity:.0;
+    animation:busyBadgeGlow 2.6s ease-in-out infinite;
+  }
+  .card.state-busy .pill.busy .pill-dot{
+    animation:busyDotPulse 1.4s ease-in-out infinite;
+  }
+  @keyframes busyBadgeFloat{
+    0%,100%{ transform:translateY(0) scale(1); }
+    50%{ transform:translateY(-1px) scale(1.02); }
+  }
+  @keyframes busyBadgeAura{
+    0%{ opacity:.0; transform:scale(1); }
+    18%{ opacity:.55; }
+    70%{ opacity:.12; }
+    100%{ opacity:0; transform:scale(1.26); }
+  }
+  @keyframes busyBadgeGlow{
+    0%,100%{ opacity:0; transform:scale(.96); }
+    38%{ opacity:.55; transform:scale(1.08); }
+    100%{ opacity:0; transform:scale(1.24); }
+  }
+  @keyframes busyDotPulse{
+    0%,100%{ transform:scale(1); box-shadow:0 0 0 0 rgba(166,70,47,0); }
+    50%{ transform:scale(1.18); box-shadow:0 0 0 6px rgba(166,70,47,.12); }
+  }
+
+  .status-row{
+    position:relative;
+    overflow:hidden;
+    background:linear-gradient(135deg, rgba(255,255,255,.62), rgba(255,253,248,.35));
+    border-color:rgba(107,74,50,.10);
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.72), 0 12px 24px -24px rgba(36,24,17,.6);
+  }
+  .status-row::after{
+    content:"";
+    position:absolute;
+    top:0; bottom:0; left:0; width:3px;
+    background:var(--available);
+    opacity:.72;
+  }
+  .state-available .status-row{
+    animation:availableAuraGrow 3s ease-in-out infinite;
+  }
+  .state-available .status-icon.avail-icon{
+    position:relative;
+    animation:availableIconAura 3s ease-in-out infinite;
+    box-shadow:0 0 0 0 rgba(47,107,69,0);
+  }
+  .state-available .status-value.available{
+    animation:availableTextGlow 3s ease-in-out infinite;
+  }
+  @keyframes availableAuraGrow{
+    0%,100%{
+      box-shadow:inset 0 1px 0 rgba(255,255,255,.72), 0 12px 24px -24px rgba(36,24,17,.6), 0 0 0 0 rgba(47,107,69,0);
+      border-color:rgba(47,107,69,.10);
+    }
+    50%{
+      box-shadow:inset 0 1px 0 rgba(255,255,255,.80), 0 16px 28px -24px rgba(36,24,17,.64), 0 0 0 8px rgba(47,107,69,.055), 0 0 26px rgba(47,107,69,.13);
+      border-color:rgba(47,107,69,.22);
+    }
+  }
+  @keyframes availableIconAura{
+    0%,100%{
+      transform:scale(1);
+      box-shadow:0 0 0 0 rgba(47,107,69,0), 0 0 0 0 rgba(47,107,69,0);
+    }
+    50%{
+      transform:scale(1.04);
+      box-shadow:0 0 0 8px rgba(47,107,69,.09), 0 0 18px rgba(47,107,69,.16);
+    }
+  }
+  @keyframes availableTextGlow{
+    0%,100%{ text-shadow:0 0 0 rgba(47,107,69,0); }
+    50%{ text-shadow:0 0 14px rgba(47,107,69,.22); }
+  }
+
+  .state-busy .status-row::after{ background:var(--busy); }
+  .state-busy .status-row{
+    animation: busyAuraGrow 2.8s ease-in-out infinite;
+  }
+  .state-busy .status-icon.busy-icon{
+    position:relative;
+    animation: busyIconAura 2.8s ease-in-out infinite;
+    box-shadow: 0 0 0 0 rgba(166,70,47,0.00);
+  }
+  .state-busy .status-value.busy{
+    animation: busyTextGlow 2.8s ease-in-out infinite;
+  }
+  @keyframes busyAuraGrow{
+    0%, 100%{
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.72), 0 12px 24px -24px rgba(36,24,17,.6), 0 0 0 0 rgba(166,70,47,0.00);
+      border-color: rgba(166,70,47,.12);
+    }
+    50%{
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.78), 0 16px 28px -24px rgba(36,24,17,.66), 0 0 0 8px rgba(166,70,47,.06), 0 0 26px rgba(166,70,47,.14);
+      border-color: rgba(166,70,47,.24);
+    }
+  }
+  @keyframes busyIconAura{
+    0%, 100%{
+      transform: scale(1);
+      box-shadow: 0 0 0 0 rgba(166,70,47,0.00), 0 0 0 0 rgba(166,70,47,0.00);
+    }
+    50%{
+      transform: scale(1.04);
+      box-shadow: 0 0 0 8px rgba(166,70,47,0.10), 0 0 18px rgba(166,70,47,0.16);
+    }
+  }
+  @keyframes busyTextGlow{
+    0%, 100%{ text-shadow: 0 0 0 rgba(166,70,47,0.00); }
+    50%{ text-shadow: 0 0 14px rgba(166,70,47,0.24); }
+  }
+  .status-value{ letter-spacing:.1px; }
+
+  /* Live session progress — calculated by JavaScript every 15 seconds. */
+  .session-progress{
+    margin:-4px 2px 18px;
+    padding:10px 12px 11px;
+    border-radius:12px;
+    background:rgba(166,70,47,.055);
+    border:1px solid rgba(166,70,47,.10);
+  }
+  .session-progress-meta{
+    display:flex;
+    justify-content:space-between;
+    gap:12px;
+    align-items:center;
+    margin-bottom:7px;
+    font-size:11px;
+    color:var(--muted);
+  }
+  .session-remaining{ color:var(--busy); font-weight:700; }
+  .session-progress-track{
+    height:6px;
+    border-radius:99px;
+    background:rgba(166,70,47,.10);
+    overflow:hidden;
+    box-shadow:inset 0 1px 2px rgba(36,24,17,.08);
+  }
+  .session-progress-bar{
+    display:block;
+    width:0;
+    height:100%;
+    border-radius:inherit;
+    background:linear-gradient(90deg, #b85b40, #d79b6a, #b85b40);
+    background-size:200% 100%;
+    animation:progressGlow 3s linear infinite;
+    transition:width .8s cubic-bezier(.22,.61,.36,1);
+    box-shadow:0 0 10px rgba(166,70,47,.22);
+  }
+  @keyframes progressGlow{ to{background-position:-200% 0} }
+
+  /* Available-window progress: calm green, showing how much free time remains. */
+  .session-progress.available-progress{
+    background:
+      radial-gradient(circle at 88% 0%, rgba(111,181,134,.18), transparent 38%),
+      linear-gradient(135deg, rgba(47,107,69,.075), rgba(228,239,227,.48));
+    border-color:rgba(47,107,69,.16);
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.72), 0 10px 22px -20px rgba(47,107,69,.55);
+  }
+  .available-progress .session-progress-meta{ color:#647469; }
+  .available-progress .session-progress-title{
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+  }
+  .available-progress .session-progress-title::before{
+    content:"";
+    width:7px; height:7px;
+    border-radius:50%;
+    background:#4f9b67;
+    box-shadow:0 0 0 4px rgba(79,155,103,.12), 0 0 10px rgba(79,155,103,.35);
+    animation:availableStatusPulse 2.4s ease-in-out infinite;
+    flex:0 0 auto;
+  }
+  .available-progress .session-remaining{ color:var(--available); }
+  .available-progress .session-progress-track{
+    height:7px;
+    background:rgba(47,107,69,.105);
+    border:1px solid rgba(47,107,69,.06);
+  }
+  .available-progress .session-progress-bar{
+    position:relative;
+    width:100%;
+    background:linear-gradient(90deg, #2f6b45, #65a878, #8bc69a, #65a878, #2f6b45);
+    background-size:240% 100%;
+    animation:availableFlow 4.5s linear infinite;
+    box-shadow:0 0 12px rgba(47,107,69,.25);
+  }
+  .available-progress .session-progress-bar::after{
+    content:"";
+    position:absolute;
+    right:1px; top:50%;
+    width:8px; height:8px;
+    transform:translate(50%,-50%);
+    border-radius:50%;
+    background:#f7fff7;
+    border:2px solid #4f9b67;
+    box-shadow:0 0 0 4px rgba(79,155,103,.12), 0 0 10px rgba(79,155,103,.42);
+  }
+  .available-progress.is-ending{
+    background:linear-gradient(135deg, rgba(198,162,77,.095), rgba(255,250,232,.60));
+    border-color:rgba(198,162,77,.20);
+  }
+  .available-progress.is-ending .session-progress-title::before{
+    background:#b58a33;
+    box-shadow:0 0 0 4px rgba(181,138,51,.12), 0 0 10px rgba(181,138,51,.35);
+  }
+  .available-progress.is-ending .session-remaining{ color:#8a6424; }
+  .available-progress.is-ending .session-progress-track{ background:rgba(198,162,77,.13); }
+  .available-progress.is-ending .session-progress-bar{
+    background:linear-gradient(90deg, #a47728, #d6b35d, #ecd184, #d6b35d, #a47728);
+    background-size:240% 100%;
+    box-shadow:0 0 12px rgba(198,162,77,.25);
+  }
+  .available-progress.is-ending .session-progress-bar::after{
+    border-color:#b58a33;
+    box-shadow:0 0 0 4px rgba(181,138,51,.12), 0 0 10px rgba(181,138,51,.42);
+  }
+  .available-progress.is-waiting .session-progress-bar{ width:0; }
+  @keyframes availableFlow{ to{ background-position:-240% 0; } }
+  @keyframes availableStatusPulse{
+    0%,100%{ transform:scale(1); opacity:.85; }
+    50%{ transform:scale(1.18); opacity:1; }
+  }
+
+  .next-label{ margin-top:2px; }
+  .next-box{
+    position:relative;
+    overflow:hidden;
+    background:rgba(239,230,211,.54);
+    border-color:rgba(107,74,50,.10);
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.60);
+    transition:transform .3s cubic-bezier(.22,.61,.36,1), opacity .3s ease, border-color .3s ease, box-shadow .3s ease;
+  }
+  .next-box::before{
+    content:"";
+    position:absolute;
+    top:0; bottom:0; left:0;
+    width:3px;
+    background:var(--gold);
+    opacity:.45;
+  }
+  .next-box.is-available::before{ background:var(--available); opacity:.55; }
+  .next-box.is-booked::before{ background:var(--booking-brown); opacity:.72; }
+  .next-box.is-none::before{ background:#737780; opacity:.55; }
+  .next-box.is-none{
+    background:linear-gradient(135deg, rgba(79,82,89,.07), rgba(79,82,89,.025));
+    border-color:rgba(79,82,89,.16);
+  }
+  .next-box:hover{ transform:translateX(4px); border-color:rgba(198,162,77,.34); box-shadow:0 12px 24px -21px rgba(36,24,17,.62); }
+  .next-box.slot-enter{ animation:slotReveal .58s cubic-bezier(.22,.61,.36,1) both; }
+  @keyframes slotReveal{ from{opacity:0;transform:translateX(-10px)} to{opacity:1;transform:translateX(0)} }
+  .next-box-first{
+    animation:nextHourPulse 3.2s ease-in-out infinite;
+    box-shadow:0 12px 28px -24px rgba(198,162,77,.7);
+  }
+  .next-box-icon{ transition:transform .3s ease, background .3s ease; }
+  .next-box:hover .next-box-icon{ transform:rotate(-5deg) scale(1.06); background:#fff; }
+  .next-th.no-more{ color:var(--night-ink); }
+  .next-box.is-none .next-box-icon{ background:rgba(73,76,82,.08); }
+  .closing-note{
+    display:flex;
+    align-items:center;
+    gap:7px;
+    margin-top:3px;
+    color:#696d74;
+    font-size:11px;
+    font-family:var(--font-english);
+    text-transform:uppercase;
+    letter-spacing:.65px;
+  }
+  .closing-note-dot{ width:6px;height:6px;border-radius:50%;background:#777b82;box-shadow:0 0 0 4px rgba(119,123,130,.10); }
+
+  .footer{ position:relative; }
+  .walkin{
+    position:relative;
+    overflow:hidden;
+    background:linear-gradient(135deg, rgba(255,253,248,.92), rgba(255,253,248,.72));
+    border-color:rgba(255,255,255,.72);
+    backdrop-filter:blur(12px);
+    -webkit-backdrop-filter:blur(12px);
+  }
+  .walkin::after{
+    content:"";
+    position:absolute;
+    width:230px;height:230px;
+    border-radius:50%;
+    right:-120px;top:-145px;
+    background:radial-gradient(circle, rgba(198,162,77,.18), transparent 68%);
+    animation:footerGlow 7s ease-in-out infinite;
+  }
+  @keyframes footerGlow{ 0%,100%{transform:scale(.9);opacity:.55} 50%{transform:scale(1.12);opacity:1} }
+  .walkin-th{ position:relative; z-index:1; }
+
+  /* Atmosphere shifts gently through the day, controlled by JavaScript. */
+  body.atmosphere-day{ --bg:#F5EFE2; --bg-2:#F0E7D6; }
+  body.atmosphere-evening{ --bg:#F1E7D7; --bg-2:#EADBC7; }
+  body.atmosphere-night{ --bg:#E9E0D3; --bg-2:#E4D7C4; }
+  body.atmosphere-night::before{ filter:saturate(.86) brightness(.90); }
+  body.atmosphere-night .ambient-orb{ opacity:.17; }
+
+  @media (max-width:900px){
+    .header{ padding:16px; }
+    .card{ transform:none !important; }
+  }
+  @media (max-width:640px){
+    body{ padding:12px; }
+    .header{ border-radius:20px; }
+    .brand-badge{ width:124px;height:78px; }
+    .title-block{ min-width:0; }
+    .clock-box{ min-width:0; }
+    .card-top{ padding:16px;gap:12px; }
+    .avatar{ width:58px;height:58px; }
+    .pill{ padding:7px 10px;font-size:12px; }
+    .card-body{ padding:17px; }
+    .status-row{ padding:13px; }
+    .next-th{ font-size:16px; }
+    .walkin{ padding:18px; }
+    .walkin-th{ font-size:19px; }
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    *,*::before,*::after{ animation-duration:.001ms !important; animation-iteration-count:1 !important; scroll-behavior:auto !important; }
+    .card,.board{ transform:none !important; transition:none !important; }
+  }
+
+
+  /* ============================================================
+     V4.3 — Restore the original open header layout
+     Removes the large rounded glass frame while keeping the
+     premium animations on the logo, title, clock, cards and page.
+     ============================================================ */
+  .header{
+    position:relative;
+    padding:0 0 18px;
+    border:0;
+    border-bottom:1px solid var(--line);
+    border-radius:0;
+    background:transparent;
+    box-shadow:none;
+    backdrop-filter:none;
+    -webkit-backdrop-filter:none;
+    overflow:visible;
+  }
+  .header::before{
+    content:none;
+    display:none;
+    animation:none;
+  }
+  @media (max-width:900px){
+    .header{ padding:0 0 18px; }
+  }
+  @media (max-width:640px){
+    .header{ border-radius:0; }
+  }
+
+
+
+  /* ============================================================
+     V4.7 — display resilience, customer status, TV controls,
+     approaching-queue energy and bilingual crossfade
+     ============================================================ */
+
+  /* Soft Thai / English automatic crossfade. */
+  .lang-pair{
+    display:inline-grid;
+    align-items:center;
+    vertical-align:middle;
+  }
+  .lang-pair.lang-pair-block{ display:grid; width:100%; }
+  .lang-pair > .lang-th-text,
+  .lang-pair > .lang-en-text{
+    grid-area:1 / 1;
+    transition:opacity .75s ease, transform .75s cubic-bezier(.22,.61,.36,1), filter .75s ease;
+  }
+  body:not(.language-en) .lang-pair > .lang-th-text{
+    opacity:1; transform:translateY(0); filter:blur(0);
+  }
+  body:not(.language-en) .lang-pair > .lang-en-text{
+    opacity:0; transform:translateY(5px); filter:blur(2px); pointer-events:none;
+  }
+  body.language-en .lang-pair > .lang-th-text{
+    opacity:0; transform:translateY(-5px); filter:blur(2px); pointer-events:none;
+  }
+  body.language-en .lang-pair > .lang-en-text{
+    opacity:1; transform:translateY(0); filter:blur(0);
+  }
+  .hero-title-switch{ min-height:54px; }
+  .hero-title-switch .title-th,
+  .hero-title-switch .title-en{ margin:0; align-self:center; }
+  .hero-title-switch .title-en{ font-size:clamp(21px,2.5vw,32px); }
+  .language-indicator{
+    min-width:44px;
+    font-family:var(--font-english);
+    font-size:10px;
+    font-weight:800;
+    letter-spacing:.9px;
+    color:var(--espresso);
+  }
+
+  /* Customer-facing sync state; five taps reveal temporary diagnostics. */
+  .sync-strip{
+    cursor:pointer;
+    user-select:none;
+    max-width:min(92vw, 980px);
+    text-align:center;
+    transition:background .35s ease, border-color .35s ease, color .35s ease, box-shadow .35s ease, transform .25s ease;
+  }
+  .sync-strip:active{ transform:scale(.985); }
+  .sync-strip.status-warn{
+    color:#8a6424;
+    background:#fff8e6;
+    border-color:rgba(198,162,77,.32);
+    box-shadow:0 5px 16px -12px rgba(154,108,28,.65);
+  }
+  .sync-strip.status-critical,
+  .sync-strip.status-offline{
+    color:#94442f;
+    background:#fff0e9;
+    border-color:rgba(166,70,47,.30);
+    box-shadow:0 6px 18px -12px rgba(166,70,47,.65);
+  }
+  .sync-strip.debug-active{
+    border-style:dashed;
+    border-color:rgba(107,74,50,.40);
+  }
+  .dot.critical{ background:var(--busy); }
+
+  /* Last five minutes: shift the live session panel to premium gold. */
+  .session-progress.is-final-minutes{
+    background:linear-gradient(135deg, rgba(198,162,77,.14), rgba(255,249,224,.76));
+    border-color:rgba(198,162,77,.36);
+    box-shadow:0 0 0 1px rgba(255,255,255,.55) inset, 0 0 22px rgba(198,162,77,.18);
+    animation:finalMinuteGlow 1.9s ease-in-out infinite;
+  }
+  .session-progress.is-final-minutes .session-progress-title,
+  .session-progress.is-final-minutes .session-remaining{ color:#9a6c1c; }
+  .session-progress.is-final-minutes .session-progress-track{ background:rgba(198,162,77,.16); }
+  .session-progress.is-final-minutes .session-progress-bar{
+    background:linear-gradient(90deg,#a97824,#d6ad4e,#f1d784,#d6ad4e,#a97824);
+    background-size:240% 100%;
+    box-shadow:0 0 14px rgba(198,162,77,.38);
+  }
+  @keyframes finalMinuteGlow{
+    0%,100%{ transform:translateY(0); box-shadow:0 0 0 1px rgba(255,255,255,.55) inset,0 0 12px rgba(198,162,77,.10); }
+    50%{ transform:translateY(-1px); box-shadow:0 0 0 1px rgba(255,255,255,.70) inset,0 0 28px rgba(198,162,77,.24); }
+  }
+  .room-prep-message{
+    display:none;
+    margin-top:9px;
+    padding:7px 10px;
+    border-radius:9px;
+    background:rgba(198,162,77,.11);
+    color:#865f22;
+    font-size:11px;
+    font-weight:700;
+    letter-spacing:.15px;
+  }
+  .session-progress.is-preparing .room-prep-message{
+    display:flex;
+    align-items:center;
+    gap:7px;
+    animation:prepMessageIn .45s ease both;
+  }
+  .room-prep-message::before{
+    content:"";
+    width:7px;height:7px;border-radius:50%;
+    background:var(--gold);
+    box-shadow:0 0 0 4px rgba(198,162,77,.14),0 0 12px rgba(198,162,77,.40);
+    animation:prepDot 1.45s ease-in-out infinite;
+  }
+  @keyframes prepMessageIn{ from{opacity:0;transform:translateY(4px)} to{opacity:1;transform:translateY(0)} }
+  @keyframes prepDot{ 0%,100%{transform:scale(.9);opacity:.65} 50%{transform:scale(1.2);opacity:1} }
+
+  /* Rotating aura around a booking that is about to begin. */
+  .next-box.queue-imminent{
+    overflow:visible;
+    isolation:isolate;
+    border-color:rgba(198,162,77,.48);
+    background:linear-gradient(135deg,rgba(255,248,218,.84),rgba(239,230,211,.70));
+    box-shadow:0 0 0 1px rgba(255,255,255,.65) inset,0 10px 30px -20px rgba(198,162,77,.80),0 0 22px rgba(198,162,77,.16);
+  }
+  .next-box.queue-imminent::after{
+    content:"";
+    position:absolute;
+    inset:-3px;
+    border-radius:inherit;
+    padding:2px;
+    background:conic-gradient(from 0deg,transparent 0 18%,rgba(198,162,77,.18) 25%,#f1d784 38%,#b98228 49%,transparent 61% 100%);
+    -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
+    -webkit-mask-composite:xor;
+    mask-composite:exclude;
+    pointer-events:none;
+    z-index:3;
+    animation:queueOrbit 1.8s linear infinite;
+    filter:drop-shadow(0 0 5px rgba(198,162,77,.42));
+  }
+  .next-box.queue-imminent .next-box-icon{
+    background:#fff9e8;
+    color:#9a6c1c;
+    box-shadow:0 0 0 5px rgba(198,162,77,.12),0 0 16px rgba(198,162,77,.24);
+    animation:imminentIcon 1.65s ease-in-out infinite;
+  }
+  @keyframes queueOrbit{ to{ transform:rotate(360deg); } }
+  @keyframes imminentIcon{ 0%,100%{transform:scale(1)} 50%{transform:scale(1.07)} }
+  .queue-prep-note{
+    display:none;
+    margin-top:4px;
+    color:#916723;
+    font-size:11px;
+    font-weight:700;
+    letter-spacing:.25px;
+  }
+  .next-box.queue-imminent .queue-prep-note{ display:block; animation:prepMessageIn .45s ease both; }
+
+  /* Day off / not working today should be unmistakable, not faded away. */
+  .card.state-off{
+    opacity:1;
+    border:2px solid rgba(119,123,130,.28);
+    background:
+      repeating-linear-gradient(135deg,rgba(119,123,130,.035) 0 12px,transparent 12px 24px),
+      linear-gradient(160deg,#fffdf8,#f1ece3);
+  }
+  .card.state-off .card-top{
+    filter:none;
+    background:linear-gradient(145deg,#68625a,#777064);
+    box-shadow:inset 0 -3px 0 rgba(231,206,140,.28);
+  }
+  .card.state-off .pill.off{
+    background:#fff4cf;
+    color:#715521;
+    border-color:rgba(231,206,140,.48);
+    box-shadow:0 0 0 5px rgba(231,206,140,.08);
+  }
+  .card.state-off .day-off-body{ min-height:290px; padding:42px 24px; }
+  .card.state-off .day-off-icon{
+    width:78px;height:78px;
+    padding:13px;
+    border-radius:50%;
+    background:#ede8df;
+    box-shadow:0 0 0 9px rgba(119,123,130,.08),0 18px 34px -25px rgba(36,24,17,.75);
+  }
+  .card.state-off .day-off-text{ color:#54575c; font-size:clamp(30px,4vw,46px); }
+  .card.state-off .day-off-sub{ color:#64676c; font-size:15px; font-weight:650; }
+
+  /* Discreet TV/tablet controls. */
+  .display-controls{
+    position:fixed;
+    right:16px;
+    bottom:16px;
+    z-index:80;
+    display:flex;
+    gap:8px;
+    align-items:center;
+    padding:7px;
+    border-radius:999px;
+    background:rgba(255,253,248,.76);
+    border:1px solid rgba(255,255,255,.70);
+    box-shadow:0 12px 32px -20px rgba(36,24,17,.80);
+    backdrop-filter:blur(12px);
+    -webkit-backdrop-filter:blur(12px);
+    opacity:.72;
+    transition:opacity .25s ease,transform .25s ease;
+  }
+  .display-controls:hover,.display-controls:focus-within{ opacity:1; transform:translateY(-2px); }
+  .display-control{
+    border:0;
+    width:38px;height:38px;
+    border-radius:50%;
+    display:grid;
+    place-items:center;
+    cursor:pointer;
+    color:var(--espresso);
+    background:rgba(239,230,211,.72);
+    transition:transform .2s ease,background .2s ease,box-shadow .2s ease;
+  }
+  .display-control:hover{ transform:scale(1.06); background:#fff8e8; box-shadow:0 7px 16px -11px rgba(36,24,17,.80); }
+  .display-control svg{ width:18px;height:18px; }
+  .wake-indicator.is-active{ color:var(--available); background:rgba(228,239,227,.90); }
+  .wake-indicator.is-unavailable{ color:#858078; }
+  :fullscreen .display-controls{ right:20px;bottom:20px; }
+
+  @media (max-width:640px){
+    .display-controls{ right:10px;bottom:10px; }
+    .display-control{ width:35px;height:35px; }
+    .hero-title-switch{ min-height:48px; }
+  }
+
+
+  /* V5.0 — Technical sync/debug information stays hidden on the public display.
+     The underlying sync/retry/watchdog continues to run normally. */
+  .sync-strip{
+    display:none !important;
+  }
+
+
+  /* V5.1 Stable — public-facing sync warning, technical diagnostics remain hidden */
+  .sync-strip{ display:none !important; }
+  #publicSyncWarning{
+    display:none;
+    position:fixed;
+    left:50%;
+    bottom:18px;
+    transform:translateX(-50%);
+    z-index:9999;
+    max-width:min(92vw, 820px);
+    padding:10px 16px;
+    border-radius:999px;
+    background:rgba(255,248,235,.96);
+    border:1px solid rgba(166,70,47,.28);
+    box-shadow:0 10px 30px rgba(36,24,17,.18);
+    color:#7A3527;
+    font-weight:700;
+    text-align:center;
+    backdrop-filter:blur(10px);
+  }
+  #publicSyncWarning.show{ display:block; }
+
+
+/* ===================== Symmetric busy-info layout ===================== */
+.customer-info{
+  display:none!important;
+}
+.customer-info-grid{
+  display:grid;
+  gap:8px;
+  margin-top:10px;
+}
+.customer-info-row{
+  display:grid;
+  grid-template-columns:84px minmax(0, 1fr);
+  align-items:center;
+  gap:8px;
+  min-height:34px;
+  padding:6px 10px;
+  border-radius:12px;
+  border:1px solid rgba(166,70,47,.12);
+  background:rgba(255,248,244,.72);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.6);
+}
+.customer-info-label{
+  font-size:11px;
+  font-weight:700;
+  color:#9A6F55;
+  letter-spacing:.2px;
+  text-transform:uppercase;
+}
+.customer-info-label .lang-pair{
+  display:block;
+}
+.customer-info-value{
+  min-width:0;
+  font-size:12px;
+  font-weight:700;
+  line-height:1.3;
+  color:#5F473D;
+  text-align:left;
+  overflow-wrap:anywhere;
+}
+.customer-info-value .en{
+  display:none;
+}
+body.lang-en .customer-info-value{
+  font-size:11.5px;
+}
+body.lang-en .customer-info-value{
+  color:#5D4A41;
+}
+body.lang-en .customer-info-value .en{
+  display:inline;
+}
+body.lang-en .customer-info-value{
+  white-space:normal;
+}
+body.lang-en .customer-info-row{
+  grid-template-columns:96px minmax(0, 1fr);
+}
+.current-until{
+  margin-top:10px!important;
+  min-height:36px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:7px 12px;
+  border-radius:12px;
+  background:rgba(198,162,77,.10);
+  border:1px solid rgba(198,162,77,.18);
+  color:#A55A38!important;
+  text-align:center;
+}
+.state-busy .status-row{
+  align-items:flex-start;
+}
+.state-busy .status-hint.busy{
+  width:100%;
+}
+@media (max-width:640px){
+  .customer-info-row{
+    grid-template-columns:72px minmax(0, 1fr);
+    gap:7px;
+    padding:6px 8px;
+  }
+  body.lang-en .customer-info-row{
+    grid-template-columns:82px minmax(0, 1fr);
+  }
+  .customer-info-label{font-size:10px;}
+  .customer-info-value{font-size:11px;}
+}
+
+
+/* ===================== Equal Available / Busy information layout ===================== */
+
+/* Keep the main current-status panel the same height for every therapist */
+.status-row{
+  min-height:168px!important;
+  align-items:flex-start!important;
+  padding-top:16px!important;
+  padding-bottom:16px!important;
+}
+
+/* Make the text column use the full available height consistently */
+.status-row > div:last-child{
+  width:100%;
+  min-width:0;
+  display:flex;
+  flex-direction:column;
+}
+
+/* Available state: reserve the same information space as Busy */
+.state-available .status-hint{
+  min-height:92px;
+  display:flex;
+  align-items:center;
+  padding-top:10px;
+  padding-bottom:10px;
+}
+
+/* Busy state: compact the 3 data rows so the block fits the same height */
+.state-busy .status-hint.busy{
+  min-height:92px;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+}
+
+/* Symmetric booking info: 3 compact rows with fixed vertical rhythm */
+.customer-info-grid{
+  width:100%;
+  display:grid!important;
+  grid-template-columns:1fr!important;
+  gap:5px!important;
+  margin-top:7px!important;
+}
+.customer-info-row{
+  min-height:25px!important;
+  padding:3px 8px!important;
+  border-radius:10px!important;
+  grid-template-columns:72px minmax(0,1fr)!important;
+  gap:7px!important;
+}
+.customer-info-label{
+  font-size:10px!important;
+  line-height:1.15!important;
+}
+.customer-info-value{
+  font-size:10.5px!important;
+  line-height:1.15!important;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+
+/* Exact end-time badge stays aligned to the bottom of the same panel */
+.current-until{
+  min-height:30px!important;
+  margin-top:6px!important;
+  padding:5px 10px!important;
+  border-radius:10px!important;
+  flex:0 0 auto;
+}
+
+/* Keep progress block geometry identical between states */
+.session-progress,
+.session-progress.available-progress{
+  min-height:58px!important;
+  margin-top:12px!important;
+  margin-bottom:12px!important;
+  padding:10px 12px!important;
+}
+
+/* Make next-booking section start at the same vertical position */
+.next-label{
+  margin-top:0!important;
+}
+
+/* Keep card bodies visually balanced */
+.card-body{
+  display:flex;
+  flex-direction:column;
+}
+.card-body .next-label{
+  flex:0 0 auto;
+}
+
+/* Allow busy info to wrap on very small widths instead of breaking layout */
+@media (max-width:1100px){
+  .status-row{
+    min-height:178px!important;
+  }
+  .state-available .status-hint,
+  .state-busy .status-hint.busy{
+    min-height:102px;
+  }
+  .customer-info-value{
+    white-space:normal;
+    overflow:visible;
+    text-overflow:clip;
+  }
+}
+
+
+/* ===================== Formal Available-State Information ===================== */
+.available-info-grid{
+  width:100%;
+  display:grid;
+  grid-template-columns:1fr;
+  gap:5px;
+  margin-top:7px;
+}
+.available-info-row{
+  display:grid;
+  grid-template-columns:92px minmax(0,1fr);
+  align-items:center;
+  gap:8px;
+  min-height:25px;
+  padding:3px 9px;
+  border-radius:10px;
+  border:1px solid rgba(69,132,90,.13);
+  background:rgba(246,252,247,.76);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.72);
+}
+.available-info-label{
+  color:#66816d;
+  font-size:10px;
+  font-weight:700;
+  line-height:1.15;
+  letter-spacing:.2px;
+  text-transform:uppercase;
+}
+.available-info-value{
+  min-width:0;
+  color:#315f42;
+  font-size:10.5px;
+  font-weight:700;
+  line-height:1.15;
+  text-align:left;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+.available-info-value.available-official{
+  color:var(--available);
+}
+.available-until{
+  min-height:30px;
+  margin-top:1px;
+  padding:5px 10px;
+  border-radius:10px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border:1px solid rgba(69,132,90,.13);
+  background:rgba(222,242,226,.62);
+  color:#2F7549;
+  font-size:11px;
+  font-weight:750;
+  text-align:center;
+}
+.available-info-grid.pre-open .available-info-row{
+  border-color:rgba(198,162,77,.18);
+  background:rgba(255,251,240,.75);
+}
+.available-info-grid.pre-open .available-info-label{
+  color:#8b7142;
+}
+.available-info-grid.pre-open .available-info-value{
+  color:#765e37;
+}
+
+/* Keep Available and Busy panels visually equivalent */
+.state-available .status-hint{
+  min-height:92px!important;
+  display:flex!important;
+  align-items:stretch!important;
+  padding-top:0!important;
+  padding-bottom:0!important;
+}
+.state-available .status-hint > .available-info-grid{
+  flex:1 1 auto;
+}
+@media(max-width:1100px){
+  .available-info-row{
+    grid-template-columns:82px minmax(0,1fr);
+  }
+  .available-info-value{
+    white-space:normal;
+    overflow:visible;
+    text-overflow:clip;
+  }
+}
+
+
+/* ===================== Cleaner upcoming-booking cards ===================== */
+.next-box.is-booked{
+  min-height:76px!important;
+  padding:12px 14px!important;
+}
+.next-box.is-booked .next-box-copy{
+  min-width:0;
+}
+.next-box.is-booked .next-th{
+  font-size:17px!important;
+  line-height:1.2!important;
+}
+.next-box.is-booked .next-en{
+  margin-top:5px!important;
+  font-size:10px!important;
+  letter-spacing:.45px!important;
+}
+.next-box.is-booked .customer-info,
+.next-box.is-booked .customer-info-grid,
+.next-box.is-booked .queue-prep-note{
+  display:none!important;
+}
+.next-box.is-booked .next-box-icon{
+  width:38px!important;
+  height:38px!important;
+}
+
+/* Keep upcoming public data intentionally minimal:
+   time + booked status + queue label only. */
+
+
+/* ===================== Next booking: name + course only ===================== */
+.next-booking-compact-info{
+  display:flex;
+  flex-wrap:wrap;
+  gap:6px;
+  margin-top:7px;
+}
+.next-booking-info-item{
+  display:inline-flex;
+  align-items:center;
+  min-height:24px;
+  padding:4px 8px;
+  border-radius:999px;
+  border:1px solid rgba(107,74,50,.11);
+  background:rgba(255,253,248,.72);
+  color:#5B4A3B;
+  font-size:11px;
+  font-weight:650;
+  line-height:1.2;
+}
+.next-box.is-booked{
+  min-height:92px!important;
+}
+.next-box.is-booked .next-en{
+  margin-top:6px!important;
+}
+@media(max-width:1100px){
+  .next-booking-info-item{
+    font-size:10px;
+    padding:3px 7px;
+  }
+}
+
+
+/* ===================== Compact Busy Current Status Panel ===================== */
+
+/* Reduce overall height of the current status area */
+.status-row{
+  min-height:142px!important;
+  padding-top:12px!important;
+  padding-bottom:12px!important;
+}
+
+/* Busy card should feel denser and shorter */
+.state-busy .status-hint.busy{
+  min-height:74px!important;
+  gap:0!important;
+  justify-content:flex-start!important;
+}
+
+/* Tighten the top heading block */
+.state-busy .status-label{
+  margin-bottom:2px!important;
+}
+.state-busy .status-title{
+  font-size:17px!important;
+  line-height:1.05!important;
+  margin-bottom:4px!important;
+}
+
+/* Make the 3 info rows more compact */
+.state-busy .customer-info-grid{
+  gap:4px!important;
+  margin-top:5px!important;
+}
+.state-busy .customer-info-row{
+  min-height:22px!important;
+  padding:2px 8px!important;
+  border-radius:9px!important;
+  grid-template-columns:66px minmax(0,1fr)!important;
+  gap:6px!important;
+}
+.state-busy .customer-info-label{
+  font-size:9.5px!important;
+  line-height:1.05!important;
+}
+.state-busy .customer-info-value{
+  font-size:10px!important;
+  line-height:1.08!important;
+}
+
+/* Shorter service-until badge */
+.state-busy .current-until{
+  min-height:25px!important;
+  margin-top:5px!important;
+  padding:4px 10px!important;
+  font-size:10.5px!important;
+  border-radius:9px!important;
+}
+
+/* Shrink the icon area slightly */
+.state-busy .status-icon{
+  width:50px!important;
+  height:50px!important;
+}
+.state-busy .status-icon svg{
+  width:24px!important;
+  height:24px!important;
+}
+
+/* Keep available side balanced but slightly tighter too */
+.state-available .status-hint{
+  min-height:74px!important;
+}
+.available-info-grid{
+  gap:4px!important;
+}
+.available-info-row{
+  min-height:22px!important;
+  padding:2px 8px!important;
+}
+.available-until{
+  min-height:25px!important;
+  padding:4px 10px!important;
+  font-size:10.5px!important;
+}
+
+
+/* ===================== FULL VIEWPORT / NO SCROLL ===================== */
+html, body{
+  width:100%;
+  height:100%;
+  overflow:hidden!important;
+}
+body{
+  padding:0!important;
+  min-height:100vh!important;
+}
+.display-fit-shell{
+  position:fixed;
+  inset:0;
+  z-index:2;
+  overflow:hidden;
+}
+.display-fit-shell .board{
+  position:absolute!important;
+  left:50%;
+  top:50%;
+  width:1400px!important;
+  max-width:none!important;
+  margin:0!important;
+  transform-origin:center center!important;
+  will-change:transform;
+}
+
+/* Controls remain fixed and do not affect fitting */
+.display-controls{
+  z-index:100!important;
+}
+
+/* Avoid accidental horizontal/vertical overflow from effects */
+.ambient-scene{
+  overflow:hidden!important;
+}
+
+
+/* ===================== Center Day Off perfectly ===================== */
+.card.state-off{
+  display:flex!important;
+  flex-direction:column!important;
+}
+.card.state-off .card-top{
+  flex:0 0 auto!important;
+}
+.card.state-off .card-body.day-off-body{
+  flex:1 1 auto!important;
+  min-height:0!important;
+  height:auto!important;
+  display:flex!important;
+  flex-direction:column!important;
+  align-items:center!important;
+  justify-content:center!important;
+  text-align:center!important;
+  padding:28px 24px!important;
+  gap:10px!important;
+}
+.card.state-off .day-off-icon{
+  margin-bottom:0!important;
+}
+.card.state-off .day-off-sub{
+  margin-top:0!important;
+  max-width:88%;
+}
+
+/* Keep the whole message block centered even when the card height changes */
+.card.state-off .card-body.day-off-body::before,
+.card.state-off .card-body.day-off-body::after{
+  content:"";
+  flex:1 1 0;
+}
+.card.state-off .card-body.day-off-body > *{
+  flex:0 0 auto;
+}
+
+
+/* ===================== LUXURY MOTION PACK ===================== */
+:root{
+  --motion-gold-glow: rgba(198,162,77,.42);
+  --motion-green-glow: rgba(74,164,106,.38);
+  --motion-busy-glow: rgba(198,96,63,.30);
+}
+
+/* Available breathing glow */
+@keyframes availableBreathingGlow{
+  0%,100%{
+    box-shadow:
+      0 0 0 0 rgba(74,164,106,.08),
+      0 0 0 6px rgba(74,164,106,.05),
+      0 10px 28px -18px rgba(74,164,106,.15);
+    filter:saturate(1);
+  }
+  50%{
+    box-shadow:
+      0 0 0 4px rgba(74,164,106,.10),
+      0 0 18px 2px rgba(74,164,106,.16),
+      0 16px 34px -16px rgba(74,164,106,.22);
+    filter:saturate(1.05);
+  }
+}
+.card.state-available .pill.available,
+.card.state-available .status-icon.avail-icon{
+  animation:availableBreathingGlow 3.6s ease-in-out infinite;
+}
+
+/* Busy warm pulse */
+@keyframes busyWarmPulse{
+  0%,100%{
+    box-shadow:
+      0 0 0 0 rgba(198,96,63,.05),
+      0 8px 22px -16px rgba(166,70,47,.14);
+    filter:saturate(1);
+  }
+  50%{
+    box-shadow:
+      0 0 14px 2px rgba(198,96,63,.12),
+      0 14px 28px -16px rgba(166,70,47,.22);
+    filter:saturate(1.04);
+  }
+}
+.card.state-busy .pill.busy,
+.card.state-busy .status-icon.busy-icon{
+  animation:busyWarmPulse 3.2s ease-in-out infinite;
+}
+
+/* Status transition flash when state changes */
+@keyframes statusStateSwitch{
+  0%{
+    box-shadow:0 0 0 0 rgba(198,162,77,0), var(--shadow-lift);
+    transform:translateY(0);
+  }
+  35%{
+    box-shadow:0 0 0 4px rgba(198,162,77,.13), 0 20px 44px -22px rgba(198,162,77,.22);
+    transform:translateY(-2px);
+  }
+  100%{
+    box-shadow:var(--shadow-lift);
+    transform:translateY(0);
+  }
+}
+.card.state-switch{
+  animation:statusStateSwitch 1.1s cubic-bezier(.22,.61,.36,1);
+}
+
+/* Card entrance */
+@keyframes cardLuxuryEnter{
+  0%{
+    opacity:0;
+    transform:translateY(18px) scale(.985);
+    filter:blur(6px);
+  }
+  100%{
+    opacity:1;
+    transform:translateY(0) scale(1);
+    filter:blur(0);
+  }
+}
+.card.motion-enter{
+  animation:cardLuxuryEnter .72s cubic-bezier(.22,.61,.36,1) both;
+}
+
+/* Progress shimmer */
+@keyframes progressShimmer{
+  0%{ transform:translateX(-130%); opacity:0; }
+  12%{ opacity:.15; }
+  50%{ opacity:.42; }
+  100%{ transform:translateX(180%); opacity:0; }
+}
+.session-progress-bar{
+  position:relative;
+  overflow:hidden;
+}
+.session-progress-bar::before{
+  content:"";
+  position:absolute;
+  inset:-20% auto -20% -40%;
+  width:38%;
+  background:linear-gradient(90deg, rgba(255,255,255,0), rgba(255,255,255,.65), rgba(255,255,255,0));
+  transform:translateX(-120%);
+  animation:progressShimmer 3.4s ease-in-out infinite;
+  pointer-events:none;
+}
+
+/* Imminent next booking highlight */
+@keyframes imminentHalo{
+  0%,100%{
+    box-shadow:0 12px 24px -21px rgba(36,24,17,.52);
+    border-color:rgba(198,162,77,.34);
+  }
+  50%{
+    box-shadow:0 18px 34px -18px rgba(198,162,77,.26);
+    border-color:rgba(198,162,77,.56);
+  }
+}
+@keyframes imminentIconPulse{
+  0%,100%{ transform:scale(1); }
+  50%{ transform:scale(1.06); }
+}
+.next-box.queue-imminent{
+  animation:imminentHalo 2.4s ease-in-out infinite;
+}
+.next-box.queue-imminent .next-box-icon{
+  animation:imminentIconPulse 2.4s ease-in-out infinite;
+}
+
+/* Clock colon pulse */
+@keyframes colonPulse{
+  0%,48%{ opacity:1; text-shadow:0 0 10px rgba(198,162,77,.26); }
+  50%,100%{ opacity:.28; text-shadow:none; }
+}
+.clock-colon{
+  display:inline-block;
+  animation:colonPulse 1s steps(1,end) infinite;
+}
+
+/* Golden micro-sparkle for logo + title */
+.brand-badge,
+.hero-title-switch{
+  position:relative;
+  overflow:visible;
+}
+@keyframes microSparkle{
+  0%,100%{ opacity:.12; transform:scale(.85); filter:blur(.2px); }
+  50%{ opacity:.75; transform:scale(1.08); filter:blur(0); }
+}
+.brand-badge::before,
+.brand-badge::after,
+.hero-title-switch::before,
+.hero-title-switch::after{
+  content:"";
+  position:absolute;
+  width:8px;
+  height:8px;
+  border-radius:50%;
+  background:radial-gradient(circle, rgba(255,248,214,.96) 0%, rgba(231,206,140,.78) 35%, rgba(198,162,77,0) 72%);
+  animation:microSparkle 3.2s ease-in-out infinite;
+  pointer-events:none;
+}
+.brand-badge::before{ top:10px; right:12px; animation-delay:.2s; }
+.brand-badge::after{ bottom:12px; left:12px; animation-delay:1.1s; }
+.hero-title-switch::before{ top:-2px; right:4%; animation-delay:.7s; }
+.hero-title-switch::after{ bottom:-4px; left:6%; animation-delay:1.8s; }
+
+/* Elegant title glow sweep */
+@keyframes heroTitleGlow{
+  0%,100%{ text-shadow:0 0 0 rgba(198,162,77,0); filter:saturate(1); }
+  50%{ text-shadow:0 0 18px rgba(198,162,77,.22); filter:saturate(1.04); }
+}
+.hero-title-switch .title-th,
+.hero-title-switch .title-en{
+  animation:heroTitleGlow 6.8s ease-in-out infinite;
+}
+
+/* Day off fade + float */
+@keyframes dayOffGrace{
+  0%{ opacity:0; transform:translateY(8px); }
+  100%{ opacity:1; transform:translateY(0); }
+}
+.card.state-off .day-off-icon,
+.card.state-off .day-off-title,
+.card.state-off .day-off-sub{
+  animation:dayOffGrace .9s cubic-bezier(.22,.61,.36,1) both;
+}
+.card.state-off .day-off-title{ animation-delay:.06s; }
+.card.state-off .day-off-sub{ animation-delay:.12s; }
+
+/* Slight ambient board drift enhancement */
+.display-fit-shell .board{
+  transition:transform .45s ease;
+}
+
+/* Reduced motion safety */
+@media (prefers-reduced-motion: reduce){
+  .card.motion-enter,
+  .card.state-switch,
+  .card.state-available .pill.available,
+  .card.state-available .status-icon.avail-icon,
+  .card.state-busy .pill.busy,
+  .card.state-busy .status-icon.busy-icon,
+  .session-progress-bar::before,
+  .next-box.queue-imminent,
+  .next-box.queue-imminent .next-box-icon,
+  .clock-colon,
+  .brand-badge::before,
+  .brand-badge::after,
+  .hero-title-switch::before,
+  .hero-title-switch::after,
+  .hero-title-switch .title-th,
+  .hero-title-switch .title-en,
+  .card.state-off .day-off-icon,
+  .card.state-off .day-off-title,
+  .card.state-off .day-off-sub{
+    animation:none !important;
+  }
+}
+
 </style>
 </head>
 <body>
 
+<div class="ambient-scene" aria-hidden="true">
+  <div class="ambient-orb one"></div>
+  <div class="ambient-orb two"></div>
+  <div class="ambient-orb three"></div>
+  <div class="ambient-particles" id="ambientParticles"></div>
+</div>
+
+<div class="display-fit-shell">
 <div class="board">
 
   <!-- Header -->
@@ -500,11 +2211,16 @@
     </div>
 
     <div class="title-block">
-      <div class="title-th" id="shopNameTh">ยินดีต้อนรับสู่บริการสปา</div>
-      <div class="title-en" id="shopNameEn">Welcome to Our Spa</div>
+      <div class="hero-title-switch lang-pair lang-pair-block">
+        <div class="title-th lang-th-text" id="shopNameTh">ยินดีต้อนรับสู่บริการสปา</div>
+        <div class="title-en lang-en-text" id="shopNameEn">Welcome to Our Spa</div>
+      </div>
       <div class="subtitle">
         <span class="rule"></span>
-        <span id="taglineTh">กรุณาตรวจสอบคิวว่างของหมอนวด</span>
+        <span class="lang-pair">
+          <span class="lang-th-text" id="taglineTh">กรุณาตรวจสอบคิวว่างของหมอนวด</span>
+          <span class="lang-en-text en" id="taglineEn">Please check therapist availability</span>
+        </span>
         <span class="rule"></span>
       </div>
     </div>
@@ -519,9 +2235,9 @@
   </div>
 
   <!-- Sync status -->
-  <div class="sync-strip">
+  <div class="sync-strip" id="syncStrip" role="status" aria-live="polite" title="แตะ 5 ครั้งเพื่อเปิดข้อมูลสำหรับผู้ดูแล">
     <span class="dot pulse" id="syncDot"></span>
-    <span id="syncText">กำลังเชื่อมต่อ <span class="en">Google Sheet</span>…</span>
+    <span id="syncText"><span class="lang-pair"><span class="lang-th-text">กำลังอัปเดตข้อมูลคิว…</span><span class="lang-en-text en">Updating queue information…</span></span></span>
   </div>
 
   <!-- Cards -->
@@ -552,11 +2268,22 @@
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="4" r="2"/><path d="M12 8v5l-3 7M12 13l3 7M9 12l3-3 3 2" stroke-linecap="round" stroke-linejoin="round"/></svg>
       </div>
       <div>
-        <div class="walkin-th">สามารถจองคิวได้ที่ <span class="en">Front Reception</span></div>
+        <div class="walkin-th lang-pair lang-pair-block"><span class="lang-th-text">สามารถจองคิวได้ที่ Front Reception</span><span class="lang-en-text en">Please book your appointment at Front Reception</span></div>
       </div>
     </div>
   </div>
 
+</div>
+</div>
+
+<div class="display-controls" aria-label="Display controls">
+  <button class="display-control language-indicator" id="languageControl" type="button" title="สลับภาษา / Switch language">TH</button>
+  <button class="display-control wake-indicator" id="wakeControl" type="button" title="ป้องกันหน้าจอดับ / Keep screen awake" aria-label="Keep screen awake">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v2M5.64 5.64l1.42 1.42M3 12h2M19 12h2M16.94 7.06l1.42-1.42" stroke-linecap="round"/><path d="M7 14a5 5 0 1 1 10 0v3H7v-3Z"/><path d="M5 21h14" stroke-linecap="round"/></svg>
+  </button>
+  <button class="display-control" id="fullscreenControl" type="button" title="เต็มหน้าจอ / Full screen" aria-label="Toggle full screen">
+    <svg id="fullscreenIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 3H3v5M16 3h5v5M8 21H3v-5M16 21h5v-5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  </button>
 </div>
 
 <script>
@@ -564,26 +2291,148 @@
    CONFIG — edit these values to match your own Google Sheet
    ================================================================ */
 const CONFIG = {
-  SHEET_ID: "1jvZi_zrqL4O3wHO-0QiMidO9HHbbbRCrwzd9BxG1IX0",
+  BUILD: "V5.1 Stable - Luxury Motion Pack",
+  SHEET_ID: "1fQ2ieIc0qBhrgx6LwlPQ53HASxvS3QBMs04gcwTfMb8",
   QUEUE_TAB: "Queue",                    // tab holding therapist identity (ID, Name, Photo)
-  SCHEDULE_TAB: "ตารางเวลาหมอนวด",         // tab holding hourly booking schedule
+  SCHEDULE_TAB: "ตารางเวลาหมอนวด",         // fallback tab name for the booking schedule
+  SCHEDULE_GID: "1985324533",             // exact worksheet from the supplied link
   SETTINGS_TAB: "Settings",              // tab holding shop name / phone etc.
   REFRESH_MS: 15000,                     // how often to re-check the sheet (ms)
-  OPEN_HOUR: 14,                         // operating hours: 14:00 - 23:00
-  CLOSE_HOUR: 23
+  OPEN_HOUR: 14,                          // shop opens at 12:00
+  QUEUE_START_HOUR: 14,                    // first queue displayed/bookable starts at 14:00
+  CLOSE_HOUR: 23,
+  MIN_BOOKABLE_GAP_MIN: 60,               // a free gap shorter than this won't be shown as "Available"
+  STALE_WARN_MS: 120000,                 // warn after 2 minutes without a successful update
+  STALE_CRITICAL_MS: 600000,             // stronger warning after 10 minutes
+  PREPARE_ROOM_MIN: 10,                  // show room preparation message
+  IMMINENT_QUEUE_MIN: 15,                // rotating aura around the approaching queue
+  DAILY_RELOAD_HOUR: 11,
+  DAILY_RELOAD_MINUTE: 50,
+  LANGUAGE_SWITCH_MS: 12000
 };
 
-function hourSlots(){
-  const slots = [];
-  for (let h = CONFIG.OPEN_HOUR; h <= CONFIG.CLOSE_HOUR; h++){
-    slots.push(String(h).padStart(2, '0') + ':00');
-  }
-  return slots;
+function languagePair(thHtml, enHtml, extraClass = ''){
+  return `<span class="lang-pair ${extraClass}"><span class="lang-th-text">${thHtml}</span><span class="lang-en-text en">${enHtml}</span></span>`;
+}
+
+function escapeHtml(value){
+  return String(value ?? '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
+
+function normalizeCustomerTypeLabel(value){
+  const raw = cleanCell(value);
+  const lower = raw.toLowerCase();
+  if (!raw) return { th: 'ไม่ระบุ', en: 'Not specified' };
+  if (lower.includes('walk')) return { th: 'Walk-in', en: 'Walk-in' };
+  if (raw.includes('โรงแรม') || lower.includes('hotel')) return { th: 'ลูกค้าโรงแรม', en: 'Hotel guest' };
+  return { th: raw, en: raw };
+}
+
+function customerInfoMarkup(customerName, course, customerType){
+  const safeName = escapeHtml(cleanCell(customerName) || 'ไม่ระบุ');
+  const safeCourse = escapeHtml(cleanCell(course) || 'ไม่ระบุ');
+  const type = normalizeCustomerTypeLabel(customerType);
+
+  return `<div class="customer-info-grid">
+    <div class="customer-info-row">
+      <div class="customer-info-label">${languagePair('ชื่อ', 'Name')}</div>
+      <div class="customer-info-value">${safeName}</div>
+    </div>
+    <div class="customer-info-row">
+      <div class="customer-info-label">${languagePair('คอร์ส', 'Course')}</div>
+      <div class="customer-info-value">${safeCourse}</div>
+    </div>
+    <div class="customer-info-row">
+      <div class="customer-info-label">${languagePair('ประเภท', 'Type')}</div>
+      <div class="customer-info-value">${escapeHtml(type.th)}<span class="en">${escapeHtml(type.en)}</span></div>
+    </div>
+  </div>`;
+}
+
+/* ---------------- Time helpers (minute precision) ---------------- */
+function minutesToLabel(mins){
+  const h = Math.floor(mins / 60) % 24;
+  const m = mins % 60;
+  return String(h).padStart(2, '0') + ':' + String(m).padStart(2, '0');
+}
+
+function nowMinutes(){
+  const now = new Date();
+  return now.getHours() * 60 + now.getMinutes();
+}
+
+function isShopOpenNow(){
+  const current = nowMinutes();
+  return current >= CONFIG.OPEN_HOUR * 60 && current < CONFIG.CLOSE_HOUR * 60;
 }
 
 /* ---------------- CSV fetch + parse ---------------- */
-function sheetCsvUrl(tabName){
-  return `https://docs.google.com/spreadsheets/d/${CONFIG.SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(tabName)}&_=${Date.now()}`;
+function sheetCsvUrl(tabName, gid = ''){
+  // Use gid for the schedule sheet so the display reads the exact worksheet
+  // from the supplied link even when that worksheet is renamed later.
+  const selector = gid
+    ? `gid=${encodeURIComponent(gid)}`
+    : `sheet=${encodeURIComponent(tabName)}`;
+  return `https://docs.google.com/spreadsheets/d/${CONFIG.SHEET_ID}/gviz/tq?tqx=out:csv&${selector}&_=${Date.now()}`;
+}
+
+function cleanCell(value){
+  return String(value ?? '')
+    .replace(/^\uFEFF/, '')
+    .replace(/[\u200B-\u200D\u2060]/g, '')
+    .replace(/\u00A0/g, ' ')
+    .trim();
+}
+
+function headerToken(value){
+  return cleanCell(value)
+    .toLowerCase()
+    .replace(/\s+/g, '')
+    .replace(/[_\-./\\]/g, '');
+}
+
+const HEADER_ALIASES = {
+  therapistid: 'Therapist_ID',
+  timeslot: 'Time_Slot',
+  status: 'Status',
+  customernote: 'Customer_Note',
+  customername: 'Customer_Name',
+  ชื่อ: 'Customer_Name',
+  ชื่อลูกค้า: 'Customer_Name',
+  id: 'ID',
+  nameth: 'Name_TH',
+  nameen: 'Name_EN',
+  photourl: 'Photo_URL',
+  workingtoday: 'Working_Today',
+  key: 'Key',
+  value: 'Value',
+  ห้อง: 'ห้อง',
+  เบอร์โทร: 'เบอร์โทร',
+  คอร์สการนวด: 'คอร์สการนวด',
+  ชั่วโมง: 'ชั่วโมง',
+  ราคา: 'ราคา',
+  ประเภทลูกค้า: 'ประเภทลูกค้า',
+  หมายเหตุ: 'หมายเหตุ',
+  เวลาเริ่มจริง: 'เวลาเริ่มจริง',
+  เวลาสิ้นสุดจริง: 'เวลาสิ้นสุดจริง',
+  พนักงานขาย: 'พนักงานขาย'
+};
+
+function canonicalHeader(value){
+  const cleaned = cleanCell(value).replace(/\s+/g, ' ');
+  return HEADER_ALIASES[headerToken(cleaned)] || cleaned;
+}
+
+function normalizeTherapistId(value){
+  const s = cleanCell(value);
+  // Google Sheets can export numeric IDs as 1.0 instead of 1.
+  if (/^\d+(?:\.0+)?$/.test(s)) return String(parseInt(s, 10));
+  return s;
 }
 
 function parseCSV(text){
@@ -605,94 +2454,405 @@ function parseCSV(text){
     }
   }
   if (field.length || row.length){ row.push(field); rows.push(row); }
-  return rows.filter(r => r.some(f => f.trim() !== ''));
+  return rows.filter(r => r.some(f => cleanCell(f) !== ''));
 }
 
 function rowsToObjects(rows){
   if (rows.length < 1) return [];
-  const headers = rows[0].map(h => h.trim());
+  // Accept wrapped headers, invisible spaces/BOMs, and small header variations.
+  const headers = rows[0].map(canonicalHeader);
   return rows.slice(1).map(r => {
     const obj = {};
-    headers.forEach((h, i) => obj[h] = (r[i] || '').trim());
+    headers.forEach((h, i) => obj[h] = cleanCell(r[i]));
     return obj;
   });
 }
 
-async function fetchTab(tabName){
-  const url = sheetCsvUrl(tabName);
+async function fetchTab(tabName, gid = ''){
+  const url = sheetCsvUrl(tabName, gid);
+  const sourceLabel = gid ? `${tabName} (gid ${gid})` : tabName;
   let res;
   try{
     res = await fetch(url, { cache: "no-store" });
   } catch (networkErr){
-    throw new Error(`เชื่อมต่อแท็บ "${tabName}" ไม่ได้ (network/CORS): ${networkErr.message}`);
+    throw new Error(`เชื่อมต่อแท็บ "${sourceLabel}" ไม่ได้ (network/CORS): ${networkErr.message}`);
   }
   if (!res.ok){
-    throw new Error(`แท็บ "${tabName}" ตอบกลับ HTTP ${res.status} — ตรวจสอบว่าชื่อแท็บตรงและแชร์ "ทุกคนที่มีลิงก์ ดูได้" แล้ว`);
+    throw new Error(`แท็บ "${sourceLabel}" ตอบกลับ HTTP ${res.status} — ตรวจสอบว่าแชร์ "ทุกคนที่มีลิงก์ ดูได้" แล้ว`);
   }
-  const text = await res.text();
-  if (/^\s*<!DOCTYPE html/i.test(text) || /accounts\.google\.com/i.test(text)){
-    throw new Error(`แท็บ "${tabName}" ไม่คืนค่าเป็น CSV (อาจเป็นเพราะยังไม่ได้แชร์แบบสาธารณะ หรือ Sheet ID/ชื่อแท็บไม่ตรง)`);
+  const csvText = await res.text();
+  if (/^\s*<!DOCTYPE html/i.test(csvText) || /accounts\.google\.com/i.test(csvText)){
+    throw new Error(`แท็บ "${sourceLabel}" ไม่คืนค่าเป็น CSV (อาจยังไม่ได้แชร์แบบสาธารณะ หรือระบุแท็บไม่ตรง)`);
   }
-  return rowsToObjects(parseCSV(text));
+  return rowsToObjects(parseCSV(csvText));
 }
 
-/* ---------------- Rendering ---------------- */
-function isAvailable(statusRaw){
-  const s = (statusRaw || '').trim().toLowerCase();
-  return s === 'ว่าง' || s === 'available' || s === 'free';
+/* ---------------- Parsing helpers for the hourly-grid format ---------------- */
+
+// Flexible time parser for Google Sheets CSV values.
+// Supports 18:00, 18:00:00, 18.00, 6:00 PM, and fractional days such as 0.75.
+function parseExactTime(value){
+  const s = cleanCell(value);
+  if (!s) return null;
+
+  if (/^(?:0(?:\.\d+)?|1(?:\.0+)?)$/.test(s)){
+    const fraction = Number(s);
+    if (Number.isFinite(fraction)) return Math.round((fraction % 1) * 1440) % 1440;
+  }
+
+  const m = /(\d{1,2})\s*[:.]\s*(\d{2})/.exec(s);
+  if (!m) return null;
+  let h = parseInt(m[1], 10);
+  const mm = parseInt(m[2], 10);
+  const meridiem = /\b(p\.?m\.?)\b/i.test(s) ? 'pm'
+    : (/\b(a\.?m\.?)\b/i.test(s) ? 'am' : '');
+
+  if (meridiem === 'pm' && h < 12) h += 12;
+  if (meridiem === 'am' && h === 12) h = 0;
+  if (h > 23 || mm > 59) return null;
+  return h * 60 + mm;
 }
 
-function currentSlotLabel(){
-  const now = new Date();
-  return String(now.getHours()).padStart(2, '0') + ':00';
+function isBusyStatus(statusRaw){
+  const s = cleanCell(statusRaw).toLowerCase().replace(/\s+/g, '');
+  return s === 'ไม่ว่าง' || s === 'busy' || s === 'unavailable' || s === 'booked';
 }
 
-function isShopOpenNow(){
-  const hour = new Date().getHours();
-  return hour >= CONFIG.OPEN_HOUR && hour <= CONFIG.CLOSE_HOUR;
+// Build a map: Therapist_ID -> sorted array of bookings { startMin, endMin, startLabel, endLabel, note }
+// Reads the hourly grid: Therapist_ID, Time_Slot, Status, Customer_Note, ห้อง, เบอร์โทร, คอร์สการนวด,
+// ชั่วโมง, ประเภทลูกค้า, หมายเหตุ, เวลาเริ่มจริง, เวลาสิ้นสุดจริง
+//
+// Consecutive "ไม่ว่าง" hours for the same therapist (continuation rows with a blank Customer_Note,
+// matching how the hotel already marks multi-hour bookings) are merged into a single booking block.
+// If เวลาเริ่มจริง / เวลาสิ้นสุดจริง are filled anywhere in that block, they override the hour-block
+// boundaries with the exact real time.
+function fieldByNameOrPosition(row, name, position){
+  const direct = row[name];
+  if (direct !== undefined && cleanCell(direct) !== '') return direct;
+  const keys = Object.keys(row);
+  return keys[position] !== undefined ? row[keys[position]] : '';
 }
 
-// Build a map: Therapist_ID -> sorted array of { time, status, note }
-function buildScheduleMap(scheduleRows){
+function parseDurationMinutes(value){
+  const s = cleanCell(value).replace(',', '.');
+  if (!s) return null;
+  const n = Number(s);
+  if (!Number.isFinite(n) || n <= 0) return null;
+  return Math.round(n * 60);
+}
+
+function buildScheduleMap(rows){
   const map = {};
-  scheduleRows.forEach(r => {
-    const id = (r.Therapist_ID || '').trim();
-    if (!id) return;
-    if (!map[id]) map[id] = [];
-    map[id].push({
-      time: (r.Time_Slot || '').trim(),
-      status: (r.Status || '').trim(),
-      note: (r.Customer_Note || '').trim()
-    });
+  const closeMin = CONFIG.CLOSE_HOUR * 60;
+
+  (rows || []).forEach((r, rowIndex) => {
+    try{
+      const therapistRaw = fieldByNameOrPosition(r, 'Therapist_ID', 0);
+      const therapistId = String(therapistRaw ?? '').trim();
+      if (!therapistId) return;
+
+      const status = fieldByNameOrPosition(r, 'Status', 2);
+      if (!isBusyStatus(status)) return;
+
+      // Prefer exact real booking times (L:M). Track whether each value
+      // came from the explicit real-time columns so merge logic never
+      // lets a fallback hourly row overwrite an exact minute value.
+      const explicitStartRaw =
+        fieldByNameOrPosition(r, 'เวลาเริ่มจริง', 11) ||
+        fieldByNameOrPosition(r, 'เวลาเริ่มจอง', 11) ||
+        fieldByNameOrPosition(r, 'Start', 11) ||
+        fieldByNameOrPosition(r, 'Start_Time', 11);
+
+      const explicitEndRaw =
+        fieldByNameOrPosition(r, 'เวลาสิ้นสุดจริง', 12) ||
+        fieldByNameOrPosition(r, 'เวลาสิ้นสุดจอง', 12) ||
+        fieldByNameOrPosition(r, 'End', 12) ||
+        fieldByNameOrPosition(r, 'End_Time', 12);
+
+      const slotRaw = fieldByNameOrPosition(r, 'Time_Slot', 1);
+      const startRaw = explicitStartRaw || slotRaw;
+      const endRaw = explicitEndRaw;
+
+      const hasExplicitStart = cleanCell(explicitStartRaw) !== '';
+      const hasExplicitEnd = cleanCell(explicitEndRaw) !== '';
+
+      let start = parseExactTime(startRaw);
+      let end = parseExactTime(endRaw);
+
+      // Fallback end time: derive from duration or the next hour only when explicit end is absent.
+      if (!Number.isFinite(start)) return;
+
+      const hoursRaw =
+        fieldByNameOrPosition(r, 'ชั่วโมง', 7) ||
+        fieldByNameOrPosition(r, 'Hours', 7) ||
+        fieldByNameOrPosition(r, 'Duration', 7);
+
+      const durationHours = parseFloat(String(hoursRaw ?? '').replace(',', '.'));
+      if (!Number.isFinite(end)){
+        if (Number.isFinite(durationHours) && durationHours > 0){
+          end = start + Math.round(durationHours * 60);
+        } else {
+          end = start + 60;
+        }
+      }
+
+      // Self-test / guard rails:
+      // 1) reject impossible or zero-length bookings
+      if (!Number.isFinite(end) || end <= start){
+        console.warn('[Spa Queue Self-test] invalid end<=start', {rowIndex, therapistId, startRaw, endRaw, start, end});
+        return;
+      }
+      // 2) never let a booking create availability beyond exact closing time.
+      if (start >= closeMin){
+        console.warn('[Spa Queue Self-test] booking starts at/after closing; ignored on public board', {rowIndex, therapistId, start, end});
+        return;
+      }
+      end = Math.min(end, closeMin);
+
+      const customer =
+        fieldByNameOrPosition(r, 'Customer_Note', 3) ||
+        fieldByNameOrPosition(r, 'Customer_Name', 3) ||
+        fieldByNameOrPosition(r, 'ชื่อลูกค้า', 3) || '';
+
+      const course =
+        fieldByNameOrPosition(r, 'คอร์สการนวด', 6) ||
+        fieldByNameOrPosition(r, 'Course', 6) ||
+        fieldByNameOrPosition(r, 'Treatment', 6) || '';
+
+      const customerType =
+        fieldByNameOrPosition(r, 'ประเภทลูกค้า', 9) ||
+        fieldByNameOrPosition(r, 'Customer_Type', 9) || '';
+
+      // Keep staff-only data private on the TV:
+      // phone, price, salesperson, internal remarks are intentionally NOT exposed here.
+      const room =
+        fieldByNameOrPosition(r, 'ห้อง', 4) ||
+        fieldByNameOrPosition(r, 'Room', 4) || '';
+
+      const displayParts = [];
+      if (customer) displayParts.push(String(customer).trim());
+      if (room) displayParts.push(`ห้อง ${String(room).trim()}`);
+      if (course) displayParts.push(String(course).trim());
+      if (customerType) displayParts.push(String(customerType).trim());
+
+      const item = {
+        therapistId,
+        startMin: start,
+        endMin: end,
+        startLabel: minutesToLabel(start),
+        endLabel: minutesToLabel(end),
+        hasExplicitStart,
+        hasExplicitEnd,
+        start,
+        end,
+        customer: String(customer || '').trim(),
+        room: String(room || '').trim(),
+        course: String(course || '').trim(),
+        customerType: String(customerType || '').trim(),
+        note: displayParts.filter(Boolean).join(' · '),
+        rowIndex
+      };
+
+      if (!map[therapistId]) map[therapistId] = [];
+      map[therapistId].push(item);
+    } catch (err){
+      console.warn('[Spa Queue Self-test] row parse error', rowIndex, err);
+    }
   });
-  Object.values(map).forEach(list => list.sort((a, b) => a.time.localeCompare(b.time)));
+
+  Object.keys(map).forEach(id => {
+    const list = map[id].sort((a,b) => a.startMin - b.startMin || a.endMin - b.endMin);
+
+    // Merge overlapping/adjacent rows belonging to the same real booking period,
+    // while preserving the richest display data.
+    const merged = [];
+    for (const item of list){
+      const prev = merged[merged.length - 1];
+      if (prev && item.startMin <= prev.endMin){
+        // Exact real times must take priority over inferred hourly bounds.
+        if (item.hasExplicitStart && !prev.hasExplicitStart){
+          prev.startMin = item.startMin;
+          prev.start = item.startMin;
+          prev.startLabel = item.startLabel;
+          prev.hasExplicitStart = true;
+        } else if (!prev.hasExplicitStart){
+          prev.startMin = Math.min(prev.startMin, item.startMin);
+          prev.start = prev.startMin;
+          prev.startLabel = minutesToLabel(prev.startMin);
+        }
+
+        if (item.hasExplicitEnd){
+          prev.endMin = item.endMin;
+          prev.end = item.endMin;
+          prev.endLabel = item.endLabel;
+          prev.hasExplicitEnd = true;
+        } else if (!prev.hasExplicitEnd){
+          prev.endMin = Math.max(prev.endMin, item.endMin);
+          prev.end = prev.endMin;
+          prev.endLabel = minutesToLabel(prev.endMin);
+        }
+
+        if (!prev.customer && item.customer) prev.customer = item.customer;
+        if (!prev.room && item.room) prev.room = item.room;
+        if (!prev.course && item.course) prev.course = item.course;
+        if (!prev.customerType && item.customerType) prev.customerType = item.customerType;
+
+        const parts = [];
+        if (prev.customer) parts.push(prev.customer);
+        if (prev.room) parts.push(`ห้อง ${prev.room}`);
+        if (prev.course) parts.push(prev.course);
+        if (prev.customerType) parts.push(prev.customerType);
+        prev.note = parts.join(' · ');
+      } else {
+        merged.push({...item});
+      }
+    }
+    merged.forEach(b => {
+      if (b.hasExplicitEnd && b.endLabel !== minutesToLabel(b.endMin)){
+        console.warn('[Spa Queue] exact end-time label mismatch', {therapistId:id, booking:b});
+      }
+    });
+    map[id] = merged;
+  });
+
   return map;
 }
 
 // Merge identity (Queue) with computed live status (Schedule) for one therapist
-function computeTherapistView(therapistId, slots){
-  const nowLabel = currentSlotLabel();
-  slots = slots || [];
+function computeTherapistView(therapistId, bookings){
+  bookings = bookings || [];
+  const nowMin = nowMinutes();
+  const closeMin = CONFIG.CLOSE_HOUR * 60; // exact closing time; 23:00 means closed from 23:00 onward
 
-  const currentEntry = slots.find(s => s.time === nowLabel);
-  const currentlyBusy = currentEntry && !isAvailable(currentEntry.status);
+  const currentBooking = bookings.find(b => nowMin >= b.startMin && nowMin < b.endMin);
+  const queueStartMin = CONFIG.QUEUE_START_HOUR * 60;
 
-  const bySlotTime = {};
-  slots.forEach(s => { bySlotTime[s.time] = s; });
+  // Determine the complete free window around the current time. This powers the
+  // green availability countdown without changing the three upcoming queue boxes.
+  let previousBooking = null;
+  for (const booking of bookings){
+    if (booking.endMin <= nowMin) previousBooking = booking;
+    else break;
+  }
+  const nextBooking = bookings.find(b => b.startMin > nowMin) || null;
+  let availableStartMin = null;
+  let availableEndMin = null;
+  if (!currentBooking){
+    availableStartMin = nowMin < queueStartMin
+      ? queueStartMin
+      : Math.max(queueStartMin, previousBooking ? previousBooking.endMin : queueStartMin);
+    availableEndMin = nextBooking ? nextBooking.startMin : closeMin;
+    if (availableEndMin <= availableStartMin){
+      availableStartMin = null;
+      availableEndMin = null;
+    }
+  }
 
-  const fullDay = hourSlots().map(time => {
-    const entry = bySlotTime[time];
-    const booked = entry && !isAvailable(entry.status);
-    return { time, booked, note: booked ? entry.note : '' };
+  // Build a timeline of what's coming up: alternating available / busy blocks,
+  // starting right after "now" (or right after the current session ends if busy)
+  // The shop may already be open, but appointment availability begins at 14:00.
+  let cursor = currentBooking ? currentBooking.endMin : Math.max(nowMin, queueStartMin);
+  const upcoming = bookings.filter(b => b.startMin >= cursor);
+
+  const segments = [];
+  upcoming.forEach(b => {
+    if (b.startMin > cursor && (b.startMin - cursor) >= CONFIG.MIN_BOOKABLE_GAP_MIN){
+      segments.push({ type: 'available', startMin: cursor, endMin: b.startMin });
+    }
+    segments.push({
+      type: 'busy',
+      startMin: b.startMin,
+      endMin: b.endMin,
+      note: b.note,
+      customerName: b.customerName || '',
+      course: b.course || '',
+      customerType: b.customerType || ''
+    });
+    cursor = b.endMin;
+  });
+  if (cursor < closeMin && (closeMin - cursor) >= CONFIG.MIN_BOOKABLE_GAP_MIN){
+    segments.push({ type: 'available', startMin: cursor, endMin: closeMin });
+  }
+
+  // Break long "available" stretches into 1-hour chunks so a single free window
+  // doesn't swallow the whole 3-slot display — always show real, distinct boxes.
+  // (A trailing remainder shorter than an hour gets folded into the previous chunk.)
+  const CHUNK_MIN = 60;
+  function roundToHalfHour(mins){
+    return Math.round(mins / 30) * 30;
+  }
+  function ceilToHalfHour(mins){
+    return Math.ceil(mins / 30) * 30;
+  }
+
+  const expanded = [];
+  segments.forEach(s => {
+    if (s.type !== 'available'){
+      expanded.push(s);
+      return;
+    }
+
+    // Round the leading edge UP to the next clean :00/:30 mark too (never down —
+    // that would claim availability before the therapist is actually free).
+    // If rounding up eats the whole window, just drop it rather than show a fake range.
+    let t = ceilToHalfHour(s.startMin);
+    if (t >= s.endMin) return;
+
+    while (t < s.endMin){
+      const rawEnd = Math.min(t + CHUNK_MIN, s.endMin);
+      let chunkEnd = rawEnd;
+
+      // Only round an artificial cut in the middle of a long free window — never round
+      // a real boundary (the start of an actual next booking, or true closing time)
+      if (rawEnd < s.endMin){
+        chunkEnd = roundToHalfHour(rawEnd);
+        if (chunkEnd <= t) chunkEnd = t + 30;
+        if (chunkEnd > s.endMin) chunkEnd = s.endMin;
+      }
+
+      // Fold a leftover remainder shorter than a full hour into this chunk — every
+      // box should represent a full hour (or more); never a sub-hour fragment
+      if (s.endMin - chunkEnd > 0 && s.endMin - chunkEnd < CHUNK_MIN){
+        chunkEnd = s.endMin;
+      }
+
+      expanded.push({ type: 'available', startMin: t, endMin: chunkEnd });
+      t = chunkEnd;
+    }
   });
 
-  // Next 3 slots in chronological order, starting right after the current hour
-  const startIdx = fullDay.findIndex(s => s.time > nowLabel);
-  const nextThree = startIdx === -1 ? [] : fullDay.slice(startIdx, startIdx + 3);
+  // Show up to 3 real upcoming boxes. When no more queue exists today,
+  // append only ONE closing placeholder so the message is never duplicated.
+  const visibleSegments = expanded.slice(0, 3);
+  if (visibleSegments.length < 3){
+    visibleSegments.push({ type: 'none' });
+  }
+
+  const nextThree = visibleSegments.map(s => s.type === 'none' ? s : ({
+    type: s.type,
+    startMin: s.startMin,
+    endMin: Math.min(s.endMin, closeMin),
+    startLabel: minutesToLabel(s.startMin),
+    endLabel: minutesToLabel(Math.min(s.endMin, closeMin)),
+    note: s.note || '',
+    customerName: s.customerName || '',
+    course: s.course || '',
+    customerType: s.customerType || ''
+  }));
 
   return {
-    available: !currentlyBusy,
-    currentNote: currentlyBusy ? currentEntry.note : '',
+    available: !currentBooking,
+    currentNote: currentBooking ? currentBooking.note : '',
+    currentCustomerName: currentBooking ? (currentBooking.customerName || '') : '',
+    currentCourse: currentBooking ? (currentBooking.course || '') : '',
+    currentCustomerType: currentBooking ? (currentBooking.customerType || '') : '',
+    currentStartMin: currentBooking ? currentBooking.startMin : null,
+    currentEndMin: currentBooking ? currentBooking.endMin : null,
+    currentEndLabel: currentBooking ? currentBooking.endLabel : '',
+    availableStartMin,
+    availableEndMin,
+    availableEndLabel: availableEndMin !== null ? minutesToLabel(availableEndMin) : '',
+    availableEndsAtClosing: availableEndMin === closeMin,
     nextThree
   };
 }
@@ -725,36 +2885,71 @@ function calendarSvg(){
 const previousStatusMap = {};
 let hasRenderedOnce = false;
 
+
+function availableInfoMarkup(view){
+  const nextBusy = (view?.nextThree || []).find(item => item.type === 'busy');
+  const nextBookingTh = nextBusy?.startLabel ? `${nextBusy.startLabel} น.` : 'ยังไม่มีคิวจอง';
+  const nextBookingEn = nextBusy?.startLabel ? nextBusy.startLabel : 'No booking scheduled';
+
+  const serviceUntilTh = view?.availableEndLabel
+    ? `${view.availableEndLabel} น.`
+    : `${String(CONFIG.CLOSE_HOUR).padStart(2,'0')}:00 น.`;
+
+  const serviceUntilEn = view?.availableEndLabel
+    ? view.availableEndLabel
+    : `${String(CONFIG.CLOSE_HOUR).padStart(2,'0')}:00`;
+
+  return `<div class="available-info-grid">
+    <div class="available-info-row">
+      <div class="available-info-label">${languagePair('สถานะ','Status')}</div>
+      <div class="available-info-value available-official">${languagePair('พร้อมให้บริการ','Ready for service')}</div>
+    </div>
+    <div class="available-info-row">
+      <div class="available-info-label">${languagePair('คิวถัดไป','Next booking')}</div>
+      <div class="available-info-value">${languagePair(nextBookingTh, nextBookingEn)}</div>
+    </div>
+    <div class="available-info-row">
+      <div class="available-info-label">${languagePair('บริการ','Service')}</div>
+      <div class="available-info-value">${languagePair('รับ Walk-in ได้ทันที','Walk-in available now')}</div>
+    </div>
+    <div class="available-until">${languagePair(`พร้อมให้บริการถึง ${serviceUntilTh}`, `Available for service until ${serviceUntilEn}`)}</div>
+  </div>`;
+}
+
 function renderCards(queueList, scheduleMap){
   const grid = document.getElementById('cardGrid');
   if (!queueList.length){
-    grid.innerHTML = `<div class="empty-state">ยังไม่มีข้อมูลหมอนวดในชีต — โปรดเพิ่มแถวข้อมูลในแท็บ "${CONFIG.QUEUE_TAB}"</div>`;
+    grid.innerHTML = `<div class="empty-state">${languagePair('ยังไม่มีข้อมูลหมอนวดในชีต','No therapist information is available')}</div>`;
     return;
   }
 
   const isFirstRender = !hasRenderedOnce;
+  const currentMinute = nowMinutes();
 
   grid.innerHTML = queueList.map((t, cardIndex) => {
-    const id = (t.ID || '').trim();
+    const id = normalizeTherapistId(t.ID || t.Therapist_ID || fieldByNameOrPosition(t, 'ID', 0));
     const nameTh = t.Name_TH || id || 'หมอนวด';
     const nameEn = t.Name_EN || '';
     const photo = t.Photo_URL
       ? `<img src="${t.Photo_URL}" alt="${nameTh}">`
       : avatarSvg();
 
-    const workingRaw = (t.Working_Today || 'ทำงาน').trim().toLowerCase();
-    const isOff = workingRaw === 'ไม่ทำงาน' || workingRaw === 'off' || workingRaw === 'no';
-
-    // Detect a real status change since the last successful render (skipped on first load)
-    const currentStatusKey = isOff ? 'off' : null; // filled in below once availability is known
+    const workingOriginal = cleanCell(t.Working_Today || 'ทำงาน');
+    const workingRaw = workingOriginal.toLowerCase();
+    const offExactTokens = ['ไม่ทำงาน','วันหยุด','หยุด','ลา','ลางาน','ไม่เข้าทำงาน','ไม่เข้า','off','no','leave','day off'];
+    const offContainsTokens = ['ไม่ทำงาน','วันหยุด','ลางาน','ไม่เข้าทำงาน','ไม่เข้าวันนี้','หยุดวันนี้','day off'];
+    const isOff = offExactTokens.includes(workingRaw) || offContainsTokens.some(token => workingRaw.includes(token));
     const enterStyle = isFirstRender ? ` style="animation-delay:${cardIndex * 90}ms"` : '';
 
-    // ---- Therapist not working today: short-circuit to a dedicated card ----
+    // ---- Therapist not working today: make the day-off state highly visible. ----
     if (isOff){
       const changed = !isFirstRender && previousStatusMap[id] !== undefined && previousStatusMap[id] !== 'off';
       previousStatusMap[id] = 'off';
+      const reason = workingOriginal && !['ไม่ทำงาน','off','no'].includes(workingRaw)
+        ? workingOriginal
+        : 'วันหยุด';
       return `
-      <div class="card card-off${isFirstRender ? ' card-enter' : ''}${changed ? ' status-flash' : ''}"${enterStyle}>
+      <div class="card card-off state-off${isFirstRender ? ' card-enter' : ''}${changed ? ' status-flash' : ''}" data-therapist="${id}" data-state="off"${enterStyle}>
         <div class="card-top">
           <div class="avatar">${photo}</div>
           <div>
@@ -763,24 +2958,24 @@ function renderCards(queueList, scheduleMap){
           </div>
           <div class="pill off">
             <span class="pill-dot"></span>
-            Day Off
+            ${languagePair('วันหยุด','Day Off')}
           </div>
         </div>
         <div class="card-body day-off-body">
           <div class="day-off-icon${changed ? ' icon-flash' : ''}">${statusIconSvg('off')}</div>
-          <div class="day-off-text en">Day Off</div>
-          <div class="day-off-sub">ไม่รับคิวในวันนี้ · <span class="en">Not accepting bookings today</span></div>
+          <div class="day-off-text">${languagePair('ไม่เข้าทำงานวันนี้','Day Off','lang-pair-block')}</div>
+          <div class="day-off-sub">${languagePair(`${reason} · ไม่รับคิวในวันนี้`,'Not accepting bookings today','lang-pair-block')}</div>
         </div>
       </div>`;
     }
 
-    // ---- Outside operating hours: whole shop is closed right now ----
+    // ---- Outside operating hours: whole shop is closed right now. ----
     if (!isShopOpenNow()){
       const changed = !isFirstRender && previousStatusMap[id] !== undefined && previousStatusMap[id] !== 'closed';
       previousStatusMap[id] = 'closed';
       const openHourLabel = String(CONFIG.OPEN_HOUR).padStart(2, '0') + ':00';
       return `
-      <div class="card card-off${isFirstRender ? ' card-enter' : ''}${changed ? ' status-flash' : ''}"${enterStyle}>
+      <div class="card card-off state-closed${isFirstRender ? ' card-enter' : ''}${changed ? ' status-flash' : ''}" data-therapist="${id}" data-state="closed"${enterStyle}>
         <div class="card-top">
           <div class="avatar">${photo}</div>
           <div>
@@ -789,50 +2984,108 @@ function renderCards(queueList, scheduleMap){
           </div>
           <div class="pill off">
             <span class="pill-dot"></span>
-            Closed
+            ${languagePair('ปิดบริการ','Closed')}
           </div>
         </div>
         <div class="card-body day-off-body">
           <div class="day-off-icon${changed ? ' icon-flash' : ''}">${statusIconSvg('off')}</div>
-          <div class="day-off-text en">Closed</div>
-          <div class="day-off-sub">ปิดให้บริการแล้ว · เปิดอีกครั้ง <span class="en">${openHourLabel}</span> น. · <span class="en">Opens again at ${openHourLabel}</span></div>
+          <div class="day-off-text">${languagePair('ปิดให้บริการ','Closed','lang-pair-block')}</div>
+          <div class="day-off-sub">${languagePair(`เปิดอีกครั้งเวลา ${openHourLabel} น.`,`Opens again at ${openHourLabel}`,'lang-pair-block')}</div>
         </div>
       </div>`;
     }
 
     const view = computeTherapistView(id, scheduleMap[id]);
     const available = view.available;
-    const nowLabel = currentSlotLabel();
+    const nowLabel = minutesToLabel(currentMinute);
     const statusKey = available ? 'available' : 'busy';
     const changed = !isFirstRender && previousStatusMap[id] !== undefined && previousStatusMap[id] !== statusKey;
     previousStatusMap[id] = statusKey;
-    const isLastHour = nowLabel === (String(CONFIG.CLOSE_HOUR).padStart(2, '0') + ':00');
+    const isLastHour = currentMinute >= (CONFIG.CLOSE_HOUR - 1) * 60 && currentMinute < CONFIG.CLOSE_HOUR * 60;
 
-    const nextBox = view.nextThree.length
-      ? view.nextThree.map((slot, i) => {
-          const label = slot.booked ? (slot.note || 'ไม่ว่าง') : `<span class="en">Available</span>`;
-          const cls = slot.booked ? 'next-th booked' : 'next-th avail';
-          return `<div class="next-box${i === 0 ? ' next-box-first' : ' next-box-later'}${slot.booked ? '' : ' next-box-empty'}">
+    const nextBox = view.nextThree
+      .map((s, i) => {
+        if (s.type === 'none'){
+          return `<div class="next-box next-box-empty is-none${i === 0 ? ' next-box-first' : ' next-box-later'}${isFirstRender ? ' slot-enter' : ''}" style="--slot-delay:${i * 90}ms;animation-delay:${i * 90}ms">
               <div class="next-box-icon">${calendarSvg()}</div>
               <div>
-                <div class="${cls}"><span class="en">${slot.time}</span> · ${label}</div>
-                <div class="next-en">${i === 0 ? 'Next hour' : 'Upcoming'}</div>
+                <div class="next-th no-more">${languagePair('ยังไม่มีคิวจองเพิ่มเติมวันนี้','No more bookings today')}</div>
+                <div class="closing-note"><span class="closing-note-dot"></span>${languagePair('คิวสุดท้าย · ใกล้ปิดร้าน','Final queue · Closing soon')}</div>
               </div>
             </div>`;
-        }).join('')
-      : `<div class="closed-banner">
-            <div class="closed-banner-icon">${calendarSvg()}</div>
-            <div class="closed-banner-text">ปิดให้บริการแล้ววันนี้ · <span class="en">Closed for today</span></div>
-          </div>`;
+        }
 
+        const isBusy = s.type === 'busy';
+        const startsIn = Number.isFinite(s.startMin) ? s.startMin - currentMinute : Infinity;
+        const imminent = isBusy && startsIn > 0 && startsIn <= CONFIG.IMMINENT_QUEUE_MIN;
+        const label = isBusy ? languagePair('มีคิวจองแล้ว','Booked') : languagePair('ว่าง','Available');
+        const cls = isBusy ? 'next-th booked' : 'next-th avail';
+        const subLabel = isBusy
+          ? (i === 0 ? languagePair('คิวถัดไป','Next booking') : languagePair('คิวลำดับต่อไป','Upcoming booking'))
+          : (i === 0 ? languagePair('ว่างตอนนี้','Open now') : languagePair('ช่วงเวลาว่าง','Open'));
+        const nextCustomerName = isBusy ? escapeHtml(cleanCell(s.customerName) || 'ไม่ระบุ') : '';
+        const nextCourse = isBusy ? escapeHtml(cleanCell(s.course) || 'ไม่ระบุ') : '';
+        const compactInfo = isBusy
+          ? `<div class="next-booking-compact-info">
+               <span class="next-booking-info-item">${languagePair(`ชื่อ: ${nextCustomerName}`, `Name: ${nextCustomerName}`)}</span>
+               <span class="next-booking-info-item">${languagePair(`คอร์ส: ${nextCourse}`, `Course: ${nextCourse}`)}</span>
+             </div>`
+          : '';
+
+        return `<div class="next-box ${isBusy ? 'is-booked' : 'is-available'}${i === 0 ? ' next-box-first' : ' next-box-later'}${isBusy ? '' : ' next-box-empty'}${imminent ? ' queue-imminent' : ''}${isFirstRender ? ' slot-enter' : ''}" data-queue-type="${s.type}" data-start="${s.startMin}" data-end="${s.endMin}" style="animation-delay:${i * 90}ms">
+            <div class="next-box-icon">${calendarSvg()}</div>
+            <div class="next-box-copy">
+              <div class="${cls}"><span class="en">${s.startLabel}-${s.endLabel}</span> · ${label}</div>
+              ${compactInfo}
+              <div class="next-en">${subLabel}</div>
+            </div>
+          </div>`;
+      }).join('');
+
+    let progressMarkup = '';
+    if (!available && view.currentStartMin !== null && view.currentEndMin !== null){
+      progressMarkup = `<div class="session-progress" data-kind="busy" data-start="${view.currentStartMin}" data-end="${view.currentEndMin}">
+          <div class="session-progress-meta">
+            <span class="session-progress-title">${languagePair('ความคืบหน้าคิว','Session progress')}</span>
+            <span class="session-remaining">${languagePair('กำลังคำนวณ…','Calculating…')}</span>
+          </div>
+          <div class="session-progress-track"><span class="session-progress-bar"></span></div>
+          <div class="room-prep-message">${languagePair('คิวถัดไปกำลังเตรียมห้อง','The next room is being prepared')}</div>
+        </div>`;
+    } else if (available && view.availableStartMin !== null && view.availableEndMin !== null){
+      progressMarkup = `<div class="session-progress available-progress" data-kind="available" data-start="${view.availableStartMin}" data-end="${view.availableEndMin}" data-end-label="${view.availableEndLabel}" data-closing="${view.availableEndsAtClosing ? 'true' : 'false'}">
+          <div class="session-progress-meta">
+            <span class="session-progress-title">${languagePair('เวลาว่างคงเหลือ','Available time left')}</span>
+            <span class="session-remaining">${languagePair('กำลังคำนวณ…','Calculating…')}</span>
+          </div>
+          <div class="session-progress-track"><span class="session-progress-bar"></span></div>
+        </div>`;
+    }
+
+    const beforeQueueStart = currentMinute < CONFIG.QUEUE_START_HOUR * 60;
+    const queueStartLabel = String(CONFIG.QUEUE_START_HOUR).padStart(2, '0') + ':00';
     const hint = available
-      ? (isLastHour
-          ? `กำลังอยู่ให้บริการคิวสุดท้าย · <span class="en">Last service today</span>`
-          : `พร้อมรับลูกค้าทันที · <span class="en">Ready for walk-in</span>`)
-      : (view.currentNote ? view.currentNote + ' · กำลังให้บริการอยู่' : `กำลังให้บริการ · <span class="en">Currently in session</span>`);
+      ? (beforeQueueStart
+          ? `<div class="available-info-grid pre-open">
+               <div class="available-info-row">
+                 <div class="available-info-label">${languagePair('สถานะ','Status')}</div>
+                 <div class="available-info-value">${languagePair('รอเวลาเปิดรับคิว','Waiting for queue opening')}</div>
+               </div>
+               <div class="available-info-row">
+                 <div class="available-info-label">${languagePair('เริ่มรับคิว','Queue starts')}</div>
+                 <div class="available-info-value">${queueStartLabel}</div>
+               </div>
+               <div class="available-info-row">
+                 <div class="available-info-label">${languagePair('บริการ','Service')}</div>
+                 <div class="available-info-value">${languagePair('กรุณาติดต่อ Front Reception','Please contact Front Reception')}</div>
+               </div>
+             </div>`
+          : availableInfoMarkup(view))
+      : `${customerInfoMarkup(view.currentCustomerName, view.currentCourse, view.currentCustomerType)}
+         <div class="current-until">${languagePair(`ให้บริการถึง ${view.currentEndLabel} น.`,`In service until ${view.currentEndLabel}`)}</div>`;
 
     return `
-    <div class="card${isFirstRender ? ' card-enter' : ''}${changed ? ' status-flash' : ''}"${enterStyle}>
+    <div class="card state-${statusKey}${isFirstRender ? ' card-enter' : ''}${changed ? ' status-flash' : ''}" data-therapist="${id}" data-state="${statusKey}"${enterStyle}>
       <div class="card-top">
         <div class="avatar-wrap${available ? ' avatar-live' : ''}"><div class="avatar">${photo}</div></div>
         <div>
@@ -841,24 +3094,27 @@ function renderCards(queueList, scheduleMap){
         </div>
         <div class="pill ${available ? 'available' : 'busy'}">
           <span class="pill-dot"></span>
-          ${available ? 'ว่าง · <span class="en">Available</span>' : 'ไม่ว่าง · <span class="en">Busy</span>'}
+          ${available ? languagePair('ว่าง','Available') : languagePair('ไม่ว่าง','Busy')}
         </div>
       </div>
-      <div class="card-body">        <div class="status-row">
+      <div class="card-body">
+        <div class="status-row">
           <div class="status-icon ${available ? 'avail-icon' : 'busy-icon'}${changed ? ' icon-flash' : ''}">${statusIconSvg(available ? 'available' : 'busy')}</div>
           <div>
-            <div class="status-label">คิวปัจจุบัน / <span class="en">Current status</span> (${nowLabel} น.)</div>
-            <div class="status-value ${available ? 'available' : 'busy'}">${available ? 'ว่าง <span class="en">Available</span>' : 'ไม่ว่าง <span class="en">Busy</span>'}</div>
+            <div class="status-label">${languagePair(`คิวปัจจุบัน (${nowLabel} น.)`,`Current status (${nowLabel})`)}</div>
+            <div class="status-value ${available ? 'available' : 'busy'}">${available ? languagePair('ว่าง','Available') : languagePair('ไม่ว่าง','Busy')}</div>
             <div class="status-hint${available ? '' : ' busy'}">${hint}</div>
           </div>
         </div>
-        <div class="next-label"><span class="rule"></span>คิวถัดไป / <span class="en">Next booking</span><span class="rule"></span></div>
+        ${progressMarkup}
+        <div class="next-label"><span class="rule"></span>${languagePair('คิวถัดไป','Next booking')}<span class="rule"></span></div>
         ${nextBox}
       </div>
     </div>`;
   }).join('');
 
   hasRenderedOnce = true;
+  requestAnimationFrame(enhanceRenderedCards);
 }
 
 function applySettings(settingsRows){
@@ -867,34 +3123,214 @@ function applySettings(settingsRows){
   if (map.ShopName_TH) document.getElementById('shopNameTh').textContent = map.ShopName_TH;
   if (map.ShopName_EN) document.getElementById('shopNameEn').textContent = map.ShopName_EN;
   if (map.Tagline_TH) document.getElementById('taglineTh').textContent = map.Tagline_TH;
+  if (map.Tagline_EN && document.getElementById('taglineEn')) document.getElementById('taglineEn').textContent = map.Tagline_EN;
+}
+
+
+function validateScheduleRuntime(scheduleRows, scheduleMap){
+  const busyRows = (scheduleRows || []).filter(r => isBusyStatus(fieldByNameOrPosition(r, 'Status', 2)));
+  const bookingCount = Object.values(scheduleMap || {}).reduce((sum, list) => sum + (list?.length || 0), 0);
+
+  if (busyRows.length > 0 && bookingCount === 0){
+    console.error('[Spa Queue] Busy rows exist but no bookings were parsed.', {
+      build: CONFIG.BUILD,
+      busyRows: busyRows.length,
+      firstBusyRow: busyRows[0]
+    });
+  } else {
+    console.info('[Spa Queue] Schedule parsed', {
+      build: CONFIG.BUILD,
+      busyRows: busyRows.length,
+      bookings: bookingCount
+    });
+  }
 }
 
 /* ---------------- Sync loop ---------------- */
+async function fetchScheduleRows(){
+  const attempts = [
+    () => fetchTab(CONFIG.SCHEDULE_TAB, CONFIG.SCHEDULE_GID),
+    () => fetchTab(CONFIG.SCHEDULE_TAB)
+  ];
+  let lastError = null;
+  for (const attempt of attempts){
+    try{
+      const rows = await attempt();
+      if (!rows.length) return rows;
+      const first = rows[0] || {};
+      const id = fieldByNameOrPosition(first, 'Therapist_ID', 0);
+      const time = fieldByNameOrPosition(first, 'Time_Slot', 1);
+      if (cleanCell(id) || cleanCell(time)) return rows;
+    } catch (err){
+      lastError = err;
+    }
+  }
+  if (lastError) throw lastError;
+  return [];
+}
+
 let lastGoodQueue = null;
 let lastGoodScheduleMap = null;
+let lastSuccessfulSyncAt = 0;
+let consecutiveSyncFailures = 0;
+let lastSyncError = null;
+let lastSyncStats = null;
+let syncInFlight = false;
+let recoveryReloadScheduled = false;
+let adminDebugMode = false;
+let debugTapTimes = [];
 
-async function syncNow(){
+function formatSyncTime(timestamp, includeSeconds = false){
+  if (!timestamp) return '--:--';
+  return new Date(timestamp).toLocaleTimeString('th-TH', {
+    hour:'2-digit', minute:'2-digit', ...(includeSeconds ? {second:'2-digit'} : {})
+  });
+}
+
+function setSyncLevel(level){
+  const strip = document.getElementById('syncStrip');
   const dot = document.getElementById('syncDot');
+  if (!strip || !dot) return;
+  strip.classList.remove('status-warn','status-critical','status-offline');
+  dot.classList.remove('warn','critical');
+  if (level === 'warn'){
+    strip.classList.add('status-warn');
+    dot.classList.add('warn');
+  } else if (level === 'critical'){
+    strip.classList.add('status-critical');
+    dot.classList.add('critical');
+  } else if (level === 'offline'){
+    strip.classList.add('status-offline');
+    dot.classList.add('critical');
+  }
+}
+
+function updateSyncStatus(){
   const text = document.getElementById('syncText');
+  const strip = document.getElementById('syncStrip');
+  if (!text || !strip) return;
+  strip.classList.toggle('debug-active', adminDebugMode);
+
+  const now = Date.now();
+  const age = lastSuccessfulSyncAt ? now - lastSuccessfulSyncAt : Infinity;
+  let level = 'ok';
+  let th = 'กำลังอัปเดตข้อมูลคิว…';
+  let en = 'Updating queue information…';
+
+  if (!navigator.onLine){
+    level = 'offline';
+    th = lastSuccessfulSyncAt
+      ? `อินเทอร์เน็ตขัดข้อง · แสดงข้อมูลล่าสุดเมื่อ ${formatSyncTime(lastSuccessfulSyncAt)}`
+      : 'ไม่มีการเชื่อมต่ออินเทอร์เน็ต · กรุณาตรวจสอบที่ Front Reception';
+    en = lastSuccessfulSyncAt
+      ? `Internet offline · Showing the last update from ${formatSyncTime(lastSuccessfulSyncAt)}`
+      : 'No internet connection · Please check with Front Reception';
+  } else if (!lastSuccessfulSyncAt){
+    level = consecutiveSyncFailures ? 'critical' : 'ok';
+    th = consecutiveSyncFailures
+      ? 'ยังดึงข้อมูลคิวไม่ได้ · กรุณาตรวจสอบที่ Front Reception'
+      : 'กำลังเชื่อมต่อข้อมูลคิว…';
+    en = consecutiveSyncFailures
+      ? 'Queue data is unavailable · Please check with Front Reception'
+      : 'Connecting to queue data…';
+  } else if (age >= CONFIG.STALE_CRITICAL_MS){
+    level = 'critical';
+    th = `ข้อมูลคิวอาจไม่เป็นปัจจุบัน · ล่าสุด ${formatSyncTime(lastSuccessfulSyncAt)} · กรุณาตรวจสอบที่ Front Reception`;
+    en = `Queue data may be outdated · Last update ${formatSyncTime(lastSuccessfulSyncAt)} · Please check with Front Reception`;
+  } else if (consecutiveSyncFailures > 0){
+    level = 'warn';
+    th = `กำลังเชื่อมต่อใหม่ · ยังแสดงข้อมูลล่าสุดเมื่อ ${formatSyncTime(lastSuccessfulSyncAt)}`;
+    en = `Reconnecting · Still showing the last update from ${formatSyncTime(lastSuccessfulSyncAt)}`;
+  } else if (age >= CONFIG.STALE_WARN_MS){
+    level = 'warn';
+    th = `กำลังรอข้อมูลใหม่ · อัปเดตล่าสุด ${formatSyncTime(lastSuccessfulSyncAt)}`;
+    en = `Waiting for a fresh update · Last updated ${formatSyncTime(lastSuccessfulSyncAt)}`;
+  } else {
+    th = `ข้อมูลคิวอัปเดตแล้ว · ล่าสุด ${formatSyncTime(lastSuccessfulSyncAt)}`;
+    en = `Queue information is up to date · Updated ${formatSyncTime(lastSuccessfulSyncAt)}`;
+  }
+
+  if (adminDebugMode && lastSyncStats){
+    th += ` · ${CONFIG.BUILD} · แถว ${lastSyncStats.rows} · ไม่ว่าง ${lastSyncStats.busyRows} · คิว ${lastSyncStats.bookings} · ล้มเหลว ${consecutiveSyncFailures}`;
+    en += ` · ${CONFIG.BUILD} · Rows ${lastSyncStats.rows} · Busy ${lastSyncStats.busyRows} · Bookings ${lastSyncStats.bookings} · Failures ${consecutiveSyncFailures}`;
+  }
+
+  setSyncLevel(level);
+  text.innerHTML = languagePair(th, en);
+}
+
+function scheduleRecoveryReload(){
+  if (recoveryReloadScheduled || !navigator.onLine || consecutiveSyncFailures < 8) return;
+  const match = /#recovery-(\d+)/.exec(location.hash);
+  const previousRecovery = match ? Number(match[1]) : 0;
+  if (previousRecovery && Date.now() - previousRecovery < 30 * 60 * 1000) return;
+  recoveryReloadScheduled = true;
+  window.setTimeout(() => {
+    const cleanUrl = location.href.replace(/#recovery-\d+$/, '').split('#')[0];
+    location.replace(`${cleanUrl}#recovery-${Date.now()}`);
+  }, 5000);
+}
+
+async function syncNow(reason = 'interval'){
+  if (syncInFlight) return;
+  syncInFlight = true;
   try{
     const [queue, scheduleRows, settings] = await Promise.all([
       fetchTab(CONFIG.QUEUE_TAB),
-      fetchTab(CONFIG.SCHEDULE_TAB),
+      fetchScheduleRows(),
       fetchTab(CONFIG.SETTINGS_TAB).catch(() => [])
     ]);
     const scheduleMap = buildScheduleMap(scheduleRows);
+    validateScheduleRuntime(scheduleRows, scheduleMap);
+    const bookingCount = Object.values(scheduleMap).reduce((sum, list) => sum + list.length, 0);
+    const busyRowCount = scheduleRows.filter(r => isBusyStatus(fieldByNameOrPosition(r, 'Status', 2))).length;
+
     lastGoodQueue = queue;
     lastGoodScheduleMap = scheduleMap;
+    lastSuccessfulSyncAt = Date.now();
+    setPublicSyncWarning('');
+    consecutiveSyncFailures = 0;
+    lastSyncError = null;
+    lastSyncStats = { rows:scheduleRows.length, busyRows:busyRowCount, bookings:bookingCount, reason };
+    recoveryReloadScheduled = false;
+
     renderCards(queue, scheduleMap);
     if (settings.length) applySettings(settings);
-    dot.classList.remove('warn');
-    text.textContent = 'เชื่อมต่อกับ Google Sheet แล้ว · อัปเดตล่าสุด ' + new Date().toLocaleTimeString('th-TH', {hour:'2-digit', minute:'2-digit', second:'2-digit'});
+    document.body.classList.remove('sync-success');
+    void document.body.offsetWidth;
+    document.body.classList.add('sync-success');
+    window.setTimeout(() => document.body.classList.remove('sync-success'), 900);
+
+    if (busyRowCount > 0 && bookingCount === 0){
+      consecutiveSyncFailures = 1;
+      lastSyncError = new Error('พบแถวไม่ว่าง แต่แปลงเป็นคิวไม่ได้');
+    }
   } catch (err){
-    dot.classList.add('warn');
+    consecutiveSyncFailures += 1;
+    lastSyncError = err;
     console.error('[Spa Queue Sync Error]', err);
-    text.textContent = 'เชื่อมต่อ Google Sheet ไม่สำเร็จ: ' + err.message;
+    setPublicSyncWarning('ข้อมูลคิวอาจไม่เป็นปัจจุบัน กรุณาติดต่อ Front Reception');
     if (lastGoodQueue) renderCards(lastGoodQueue, lastGoodScheduleMap || {});
+    scheduleRecoveryReload();
+  } finally {
+    syncInFlight = false;
+    updateSyncStatus();
   }
+}
+
+function setupSyncDebugToggle(){
+  const strip = document.getElementById('syncStrip');
+  if (!strip) return;
+  strip.addEventListener('click', () => {
+    const now = Date.now();
+    debugTapTimes = debugTapTimes.filter(t => now - t < 3000);
+    debugTapTimes.push(now);
+    if (debugTapTimes.length >= 5){
+      adminDebugMode = !adminDebugMode;
+      debugTapTimes = [];
+      updateSyncStatus();
+    }
+  });
 }
 
 /* ---------------- Clock ---------------- */
@@ -913,11 +3349,518 @@ function tickClock(){
     `${d} ${enMonths[now.getMonth()]} ${ceYear}`;
 }
 
+
+
+/* ---------------- Premium motion + live progress ---------------- */
+function remainingCopy(minutes){
+  const safe = Math.max(0, Math.ceil(minutes));
+  if (safe <= 0) return { th:'ใกล้เสร็จแล้ว', en:'Finishing soon' };
+  if (safe <= 5) return { th:`เหลืออีก ${safe} นาที`, en:`Only ${safe} min left` };
+  if (safe < 60) return { th:`เหลือ ${safe} นาที`, en:`${safe} min left` };
+  const h = Math.floor(safe / 60);
+  const m = safe % 60;
+  return m
+    ? { th:`เหลือ ${h} ชม. ${m} นาที`, en:`${h}h ${m}m left` }
+    : { th:`เหลือ ${h} ชั่วโมง`, en:`${h}h left` };
+}
+
+function availableCopy(minutes, closing){
+  const safe = Math.max(0, Math.ceil(minutes));
+  if (safe <= 0){
+    return closing
+      ? { th:'กำลังปิดร้าน', en:'Closing now' }
+      : { th:'คิวถัดไปกำลังเริ่ม', en:'Next booking starting' };
+  }
+  let thDuration;
+  let enDuration;
+  if (safe < 60){
+    thDuration = `${safe} นาที`;
+    enDuration = `${safe} min`;
+  } else {
+    const h = Math.floor(safe / 60);
+    const m = safe % 60;
+    thDuration = m ? `${h} ชม. ${m} นาที` : `${h} ชั่วโมง`;
+    enDuration = m ? `${h}h ${m}m` : `${h}h`;
+  }
+  return closing
+    ? { th:`ว่างจนปิดร้าน · เหลือ ${thDuration}`, en:`Available until closing · ${enDuration} left` }
+    : { th:`ว่างอีก ${thDuration}`, en:`Available for ${enDuration}` };
+}
+
+function updateUpcomingQueueEffects(){
+  const now = nowMinutes();
+  document.querySelectorAll('.next-box[data-queue-type="busy"]').forEach(box => {
+    const start = Number(box.dataset.start);
+    const startsIn = start - now;
+    box.classList.toggle('queue-imminent', Number.isFinite(start) && startsIn > 0 && startsIn <= CONFIG.IMMINENT_QUEUE_MIN);
+  });
+}
+
+function updateSessionProgress(){
+  const now = nowMinutes();
+  document.querySelectorAll('.session-progress').forEach(node => {
+    const start = Number(node.dataset.start);
+    const end = Number(node.dataset.end);
+    if (!Number.isFinite(start) || !Number.isFinite(end) || end <= start) return;
+
+    const kind = node.dataset.kind || 'busy';
+    const bar = node.querySelector('.session-progress-bar');
+    const remaining = node.querySelector('.session-remaining');
+    const title = node.querySelector('.session-progress-title');
+
+    if (kind === 'available'){
+      node.classList.toggle('is-waiting', now < start);
+      const minutesLeft = end - Math.max(now, start);
+      node.classList.toggle('is-ending', now >= start && minutesLeft <= 15);
+
+      if (now < start){
+        const waitMin = Math.max(0, start - now);
+        if (bar) bar.style.width = '0%';
+        if (title) title.innerHTML = languagePair(`เริ่มรับคิวเวลา ${minutesToLabel(start)}`,`Queue starts at ${minutesToLabel(start)}`);
+        if (remaining) remaining.innerHTML = languagePair(`อีก ${Math.ceil(waitMin)} นาที`,`${Math.ceil(waitMin)} min`);
+        return;
+      }
+
+      const remainingPercent = Math.min(100, Math.max(0, ((end - now) / (end - start)) * 100));
+      if (bar) bar.style.width = `${remainingPercent.toFixed(1)}%`;
+      if (title) title.innerHTML = languagePair('เวลาว่างคงเหลือ','Available time left');
+      if (remaining){
+        const copy = availableCopy(end - now, node.dataset.closing === 'true');
+        remaining.innerHTML = languagePair(copy.th, copy.en);
+      }
+      return;
+    }
+
+    const minutesLeft = end - now;
+    const progress = Math.min(100, Math.max(0, ((now - start) / (end - start)) * 100));
+    if (bar) bar.style.width = `${progress.toFixed(1)}%`;
+    if (remaining){
+      const copy = remainingCopy(minutesLeft);
+      remaining.innerHTML = languagePair(copy.th, copy.en);
+    }
+
+    const card = node.closest('.card');
+    const upcomingBusy = card
+      ? [...card.querySelectorAll('.next-box[data-queue-type="busy"]')]
+          .map(box => Number(box.dataset.start))
+          .filter(Number.isFinite)
+          .sort((a,b) => a-b)[0]
+      : null;
+    const nextStartsSoonAfter = Number.isFinite(upcomingBusy) && upcomingBusy >= end && upcomingBusy - end <= CONFIG.IMMINENT_QUEUE_MIN;
+    const preparing = minutesLeft > 0 && minutesLeft <= CONFIG.PREPARE_ROOM_MIN && nextStartsSoonAfter;
+    node.classList.toggle('is-preparing', preparing);
+    node.classList.toggle('is-final-minutes', minutesLeft > 0 && minutesLeft <= 5);
+  });
+
+  updateUpcomingQueueEffects();
+}
+
+function updateAtmosphere(){
+  const hour = new Date().getHours();
+  const mode = hour >= 18 ? 'night' : (hour >= 16 ? 'evening' : 'day');
+  document.body.classList.remove('atmosphere-day','atmosphere-evening','atmosphere-night');
+  document.body.classList.add(`atmosphere-${mode}`);
+}
+
+function createAmbientParticles(){
+  const host = document.getElementById('ambientParticles');
+  if (!host || host.childElementCount) return;
+  const count = window.matchMedia('(max-width: 640px)').matches ? 10 : 22;
+  const frag = document.createDocumentFragment();
+  for (let i = 0; i < count; i++){
+    const p = document.createElement('span');
+    p.className = 'ambient-particle';
+    p.style.left = `${4 + Math.random() * 92}%`;
+    p.style.top = `${24 + Math.random() * 75}%`;
+    p.style.setProperty('--duration', `${10 + Math.random() * 15}s`);
+    p.style.setProperty('--delay', `${-Math.random() * 18}s`);
+    p.style.setProperty('--drift', `${-40 + Math.random() * 80}px`);
+    p.style.setProperty('--opacity', `${0.12 + Math.random() * 0.30}`);
+    const size = 2 + Math.random() * 3;
+    p.style.width = `${size}px`;
+    p.style.height = `${size}px`;
+    frag.appendChild(p);
+  }
+  host.appendChild(frag);
+}
+
+function setupMotionEffects(){
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (reduceMotion) return;
+
+  // Gentle page parallax. It remains subtle enough for a lobby display.
+  window.addEventListener('pointermove', event => {
+    const x = (event.clientX / Math.max(window.innerWidth, 1) - .5) * 18;
+    const y = (event.clientY / Math.max(window.innerHeight, 1) - .5) * 14;
+    document.documentElement.style.setProperty('--motion-x', `${x}px`);
+    document.documentElement.style.setProperty('--motion-y', `${y}px`);
+  }, { passive:true });
+
+  document.addEventListener('pointermove', event => {
+    const card = event.target.closest('.card');
+    if (!card || window.innerWidth <= 900) return;
+    const rect = card.getBoundingClientRect();
+    const px = (event.clientX - rect.left) / rect.width;
+    const py = (event.clientY - rect.top) / rect.height;
+    card.style.setProperty('--tilt-x', `${(px - .5) * 2.6}deg`);
+    card.style.setProperty('--tilt-y', `${(.5 - py) * 2.2}deg`);
+    card.style.setProperty('--shine-x', `${px * 100}%`);
+    card.style.setProperty('--shine-y', `${py * 100}%`);
+    card.style.setProperty('--shine-opacity', '.7');
+  }, { passive:true });
+
+  document.addEventListener('pointerout', event => {
+    const card = event.target.closest('.card');
+    if (!card || card.contains(event.relatedTarget)) return;
+    card.style.setProperty('--tilt-x', '0deg');
+    card.style.setProperty('--tilt-y', '0deg');
+    card.style.setProperty('--shine-opacity', '0');
+  });
+}
+
+function enhanceRenderedCards(){
+  updateSessionProgress();
+  document.querySelectorAll('.card').forEach((card, index) => {
+    card.style.setProperty('--card-index', index);
+  });
+}
+
+
+let activeLanguage = 'th';
+let languageCycleTimer = null;
+let wakeLockSentinel = null;
+let wakeLockDesired = true;
+let lastHeartbeatAt = Date.now();
+
+function setLanguageMode(language){
+  activeLanguage = language === 'en' ? 'en' : 'th';
+  document.body.classList.toggle('language-en', activeLanguage === 'en');
+  const control = document.getElementById('languageControl');
+  if (control) control.textContent = activeLanguage === 'en' ? 'EN' : 'TH';
+}
+
+function restartLanguageCycle(){
+  window.clearInterval(languageCycleTimer);
+  languageCycleTimer = window.setInterval(() => {
+    setLanguageMode(activeLanguage === 'th' ? 'en' : 'th');
+  }, CONFIG.LANGUAGE_SWITCH_MS);
+}
+
+function setupLanguageCycle(){
+  setLanguageMode('th');
+  restartLanguageCycle();
+  const control = document.getElementById('languageControl');
+  if (control){
+    control.addEventListener('click', () => {
+      setLanguageMode(activeLanguage === 'th' ? 'en' : 'th');
+      restartLanguageCycle();
+    });
+  }
+}
+
+function updateFullscreenControl(){
+  const button = document.getElementById('fullscreenControl');
+  const icon = document.getElementById('fullscreenIcon');
+  if (!button || !icon) return;
+  const isFullscreen = Boolean(document.fullscreenElement || document.webkitFullscreenElement);
+  button.title = isFullscreen ? 'ออกจากโหมดเต็มหน้าจอ / Exit full screen' : 'เต็มหน้าจอ / Full screen';
+  icon.innerHTML = isFullscreen
+    ? '<path d="M9 9H4V4M15 9h5V4M9 15H4v5M15 15h5v5" stroke-linecap="round" stroke-linejoin="round"/>'
+    : '<path d="M8 3H3v5M16 3h5v5M8 21H3v-5M16 21h5v-5" stroke-linecap="round" stroke-linejoin="round"/>';
+}
+
+async function toggleFullscreen(){
+  try{
+    const current = document.fullscreenElement || document.webkitFullscreenElement;
+    if (!current){
+      const root = document.documentElement;
+      if (root.requestFullscreen) await root.requestFullscreen();
+      else if (root.webkitRequestFullscreen) root.webkitRequestFullscreen();
+    } else {
+      if (document.exitFullscreen) await document.exitFullscreen();
+      else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
+    }
+  } catch (error){
+    console.warn('[Fullscreen]', error);
+  }
+  updateFullscreenControl();
+  requestScreenWakeLock();
+}
+
+function updateWakeControl(state){
+  const button = document.getElementById('wakeControl');
+  if (!button) return;
+  button.classList.remove('is-active','is-unavailable');
+  if (state === 'active'){
+    button.classList.add('is-active');
+    button.title = 'หน้าจอจะไม่ดับ / Screen wake lock active';
+  } else if (state === 'unsupported'){
+    button.classList.add('is-unavailable');
+    button.title = 'อุปกรณ์นี้ไม่รองรับ Screen Wake Lock';
+  } else {
+    button.title = 'ป้องกันหน้าจอดับ / Keep screen awake';
+  }
+}
+
+async function requestScreenWakeLock(){
+  if (!wakeLockDesired) return;
+  if (!('wakeLock' in navigator)){
+    updateWakeControl('unsupported');
+    return;
+  }
+  if (document.visibilityState !== 'visible') return;
+  if (wakeLockSentinel && !wakeLockSentinel.released){
+    updateWakeControl('active');
+    return;
+  }
+  try{
+    wakeLockSentinel = await navigator.wakeLock.request('screen');
+    updateWakeControl('active');
+    wakeLockSentinel.addEventListener('release', () => {
+      wakeLockSentinel = null;
+      updateWakeControl('idle');
+    }, { once:true });
+  } catch (error){
+    wakeLockSentinel = null;
+    updateWakeControl('idle');
+    console.warn('[Wake Lock]', error);
+  }
+}
+
+async function toggleWakeLock(){
+  wakeLockDesired = !wakeLockDesired;
+  if (!wakeLockDesired && wakeLockSentinel){
+    try{ await wakeLockSentinel.release(); } catch (error){ console.warn('[Wake Lock release]', error); }
+    wakeLockSentinel = null;
+    updateWakeControl('idle');
+    return;
+  }
+  requestScreenWakeLock();
+}
+
+function setupDisplayControls(){
+  document.getElementById('fullscreenControl')?.addEventListener('click', toggleFullscreen);
+  document.getElementById('wakeControl')?.addEventListener('click', toggleWakeLock);
+  document.addEventListener('fullscreenchange', updateFullscreenControl);
+  document.addEventListener('webkitfullscreenchange', updateFullscreenControl);
+  document.addEventListener('keydown', event => {
+    if (event.key.toLowerCase() === 'f' && !event.ctrlKey && !event.metaKey && !event.altKey){
+      toggleFullscreen();
+    }
+  });
+  updateFullscreenControl();
+  requestScreenWakeLock();
+}
+
+function scheduleDailyReload(){
+  const now = new Date();
+  const next = new Date(now);
+  next.setHours(CONFIG.DAILY_RELOAD_HOUR, CONFIG.DAILY_RELOAD_MINUTE, 0, 0);
+  if (next <= now) next.setDate(next.getDate() + 1);
+  window.setTimeout(() => location.reload(), Math.max(1000, next - now));
+}
+
+
+function setPublicSyncWarning(message=''){
+  const el = document.getElementById('publicSyncWarning');
+  if (!el) return;
+  if (message){
+    el.textContent = message;
+    el.classList.add('show');
+  } else {
+    el.textContent = '';
+    el.classList.remove('show');
+  }
+}
+
+function setupResilience(){
+  window.addEventListener('online', () => {
+    setPublicSyncWarning('');
+    updateSyncStatus();
+    syncNow('online');
+    requestScreenWakeLock();
+  });
+  window.addEventListener('offline', () => {
+    updateSyncStatus();
+    setPublicSyncWarning('การเชื่อมต่ออินเทอร์เน็ตขัดข้อง ข้อมูลคิวอาจไม่เป็นปัจจุบัน');
+  });
+  window.addEventListener('focus', () => syncNow('focus'));
+  window.addEventListener('pageshow', () => syncNow('pageshow'));
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible'){
+      lastHeartbeatAt = Date.now();
+      updateSessionProgress();
+      updateSyncStatus();
+      syncNow('visible');
+      requestScreenWakeLock();
+    }
+  });
+
+  window.setInterval(() => {
+    const now = Date.now();
+    const drift = now - lastHeartbeatAt;
+    lastHeartbeatAt = now;
+    if (drift > 90000){
+      updateSessionProgress();
+      syncNow('watchdog-resume');
+      requestScreenWakeLock();
+    } else if (lastSuccessfulSyncAt && now - lastSuccessfulSyncAt >= CONFIG.STALE_WARN_MS){
+      setPublicSyncWarning('ข้อมูลคิวอาจล่าช้า ระบบกำลังเชื่อมต่อใหม่');
+      syncNow('stale-watchdog');
+    }
+    updateSyncStatus();
+  }, 30000);
+
+  scheduleDailyReload();
+}
+
 /* ---------------- Init ---------------- */
+createAmbientParticles();
+setupMotionEffects();
+setupLanguageCycle();
+setupDisplayControls();
+setupSyncDebugToggle();
+setupResilience();
+updateAtmosphere();
 tickClock();
-setInterval(tickClock, 1000);
-syncNow();
-setInterval(syncNow, CONFIG.REFRESH_MS);
+updateSyncStatus();
+window.setInterval(tickClock, 1000);
+window.setInterval(updateAtmosphere, 60000);
+window.setInterval(updateSessionProgress, 15000);
+syncNow('initial');
+window.setInterval(() => syncNow('interval'), CONFIG.REFRESH_MS);
+</script>
+
+<div id="publicSyncWarning" role="status" aria-live="polite"></div>
+
+<script>
+(function(){
+  const FIT_MARGIN = 18;
+  let fitRaf = 0;
+
+  function fitQueueDisplay(){
+    cancelAnimationFrame(fitRaf);
+    fitRaf = requestAnimationFrame(() => {
+      const board = document.querySelector('.display-fit-shell .board');
+      if (!board) return;
+
+      // Measure at natural size first.
+      board.style.transform = 'translate(-50%, -50%) scale(1)';
+      const naturalWidth = Math.max(board.scrollWidth, board.offsetWidth, 1);
+      const naturalHeight = Math.max(board.scrollHeight, board.offsetHeight, 1);
+
+      const availableWidth = Math.max(320, window.innerWidth - FIT_MARGIN * 2);
+      const availableHeight = Math.max(240, window.innerHeight - FIT_MARGIN * 2);
+
+      // Never crop: choose the smaller ratio.
+      // Allow a tiny upscale on large displays, but cap it for sharpness.
+      const scale = Math.min(
+        availableWidth / naturalWidth,
+        availableHeight / naturalHeight,
+        1.08
+      );
+
+      board.style.transform = `translate(-50%, -50%) scale(${scale.toFixed(4)})`;
+      document.documentElement.style.setProperty('--queue-fit-scale', scale.toFixed(4));
+    });
+  }
+
+  function setupQueueAutoFit(){
+    fitQueueDisplay();
+
+    window.addEventListener('resize', fitQueueDisplay, {passive:true});
+    window.addEventListener('orientationchange', fitQueueDisplay, {passive:true});
+    document.addEventListener('fullscreenchange', () => setTimeout(fitQueueDisplay, 80));
+
+    // Re-fit whenever queue content changes height (Busy/Available, language, bookings).
+    const board = document.querySelector('.display-fit-shell .board');
+    if (board && 'ResizeObserver' in window){
+      const ro = new ResizeObserver(() => fitQueueDisplay());
+      ro.observe(board);
+    }
+
+    const grid = document.getElementById('cardGrid');
+    if (grid){
+      const mo = new MutationObserver(() => setTimeout(fitQueueDisplay, 30));
+      mo.observe(grid, {childList:true, subtree:true, characterData:true});
+    }
+
+    // Fonts can change dimensions after loading.
+    if (document.fonts?.ready){
+      document.fonts.ready.then(() => fitQueueDisplay()).catch(()=>{});
+    }
+
+    setTimeout(fitQueueDisplay, 300);
+    setTimeout(fitQueueDisplay, 1200);
+  }
+
+  if (document.readyState === 'loading'){
+    document.addEventListener('DOMContentLoaded', setupQueueAutoFit, {once:true});
+  } else {
+    setupQueueAutoFit();
+  }
+})();
+</script>
+
+
+<script>
+(function(){
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (reduceMotion) return;
+
+  function getCardState(card){
+    if (card.classList.contains('state-busy')) return 'busy';
+    if (card.classList.contains('state-available')) return 'available';
+    if (card.classList.contains('state-off')) return 'off';
+    return 'unknown';
+  }
+
+  function animateCards(){
+    const cards = [...document.querySelectorAll('#cardGrid .card')];
+    cards.forEach((card, index) => {
+      const state = getCardState(card);
+      const prev = card.dataset.motionState;
+
+      if (!card.dataset.entered){
+        card.dataset.entered = 'true';
+        card.style.animationDelay = `${index * 120}ms`;
+        card.classList.remove('motion-enter');
+        void card.offsetWidth;
+        card.classList.add('motion-enter');
+      }
+
+      if (prev && prev !== state){
+        card.classList.remove('state-switch');
+        void card.offsetWidth;
+        card.classList.add('state-switch');
+        window.setTimeout(() => card.classList.remove('state-switch'), 1200);
+      }
+
+      card.dataset.motionState = state;
+    });
+  }
+
+  function observeQueueMotions(){
+    const host = document.getElementById('cardGrid');
+    if (!host) return;
+
+    animateCards();
+
+    const mo = new MutationObserver(() => {
+      window.requestAnimationFrame(animateCards);
+    });
+    mo.observe(host, { childList:true, subtree:true, attributes:true, attributeFilter:['class'] });
+
+    // re-run after sync refreshes / layout changes
+    window.addEventListener('resize', () => window.requestAnimationFrame(animateCards), {passive:true});
+  }
+
+  if (document.readyState === 'loading'){
+    document.addEventListener('DOMContentLoaded', observeQueueMotions, {once:true});
+  } else {
+    observeQueueMotions();
+  }
+})();
 </script>
 
 </body>
